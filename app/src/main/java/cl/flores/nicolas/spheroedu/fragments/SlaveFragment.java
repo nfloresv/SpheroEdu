@@ -9,24 +9,24 @@ import android.view.ViewGroup;
 import java.net.Socket;
 
 import cl.flores.nicolas.spheroedu.R;
-import cl.flores.nicolas.spheroedu.interfaces.OnFragmentInteractionListener;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 import cl.flores.nicolas.spheroedu.threads.ServerBluetoothThread;
 
 /**
  * A simple {@link Fragment} subclass.
- * Activities that contain this fragment must implement the
- * {@link OnFragmentInteractionListener} interface
- * to handle interaction events.
  * Use the {@link SlaveFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
 public class SlaveFragment extends Fragment implements SocketInterface {
-    private static final String pName = "pName";
+    private static final String ARG_NAME = "ARG_NAME";
 
     private String name;
     private ServerBluetoothThread server;
     private Socket socket;
+
+    public SlaveFragment() {
+        // Required empty public constructor
+    }
 
     /**
      * Use this factory method to create a new instance of
@@ -38,20 +38,16 @@ public class SlaveFragment extends Fragment implements SocketInterface {
     public static SlaveFragment newInstance(String user_name) {
         SlaveFragment fragment = new SlaveFragment();
         Bundle args = new Bundle();
-        args.putString(pName, user_name);
+        args.putString(ARG_NAME, user_name);
         fragment.setArguments(args);
         return fragment;
-    }
-
-    public SlaveFragment() {
-        // Required empty public constructor
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (getArguments() != null) {
-            name = getArguments().getString(pName);
+            name = getArguments().getString(ARG_NAME);
         }
         server = new ServerBluetoothThread(this);
     }
@@ -66,7 +62,7 @@ public class SlaveFragment extends Fragment implements SocketInterface {
     @Override
     public void onResume() {
         super.onResume();
-        server.run();
+        server.start();
     }
 
     @Override

@@ -1,117 +1,88 @@
 package cl.flores.nicolas.spheroedu.fragments;
 
-import android.app.Activity;
+import android.app.ProgressDialog;
+import android.net.Uri;
 import android.os.Bundle;
-import android.support.v4.app.ListFragment;
+import android.support.v4.app.Fragment;
+import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.ArrayAdapter;
-import android.widget.ListView;
-
-import java.net.Socket;
+import android.view.ViewGroup;
 
 import cl.flores.nicolas.spheroedu.R;
-import cl.flores.nicolas.spheroedu.fragments.dummy.DummyContent;
-import cl.flores.nicolas.spheroedu.interfaces.OnFragmentInteractionListener;
-import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 
 /**
- * A fragment representing a list of Items.
- * <p/>
- * <p/>
- * Activities containing this fragment MUST implement the {@link OnFragmentInteractionListener}
- * interface.
+ * A simple {@link Fragment} subclass.
+ * Use the {@link MasterFragment#newInstance} factory method to
+ * create an instance of this fragment.
  */
-public class MasterFragment extends ListFragment implements SocketInterface {
+public class MasterFragment extends Fragment {
+    private static final String ARG_NAME = "name";
 
-    // TODO: Rename parameter arguments, choose names that match
-    // the fragment initialization parameters, e.g. ARG_ITEM_NUMBER
-    private static final String ARG_PARAM1 = "param1";
-    private static final String ARG_PARAM2 = "param2";
+    private String name;
+    private ProgressDialog progressDialog;
 
-    // TODO: Rename and change types of parameters
-    private String mParam1;
-    private String mParam2;
-
-    private OnFragmentInteractionListener mListener;
-
-    // TODO: Rename and change types of parameters
-    public static MasterFragment newInstance(String param1, String param2) {
-        MasterFragment fragment = new MasterFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_PARAM1, param1);
-        args.putString(ARG_PARAM2, param2);
-        fragment.setArguments(args);
-        return fragment;
+    public MasterFragment() {
+        // Required empty public constructor
     }
 
     /**
-     * Mandatory empty constructor for the fragment manager to instantiate the
-     * fragment (e.g. upon screen orientation changes).
+     * Use this factory method to create a new instance of
+     * this fragment using the provided parameters.
+     *
+     * @param user_name user name.
+     * @return A new instance of fragment MasterFragment.
      */
-    public MasterFragment() {
+    public static MasterFragment newInstance(String user_name) {
+        MasterFragment fragment = new MasterFragment();
+        Bundle args = new Bundle();
+        args.putString(ARG_NAME, user_name);
+        fragment.setArguments(args);
+        return fragment;
     }
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-
         if (getArguments() != null) {
-            mParam1 = getArguments().getString(ARG_PARAM1);
-            mParam2 = getArguments().getString(ARG_PARAM2);
-        }
-
-        // TODO: Change Adapter to display your content
-        setListAdapter(new ArrayAdapter<DummyContent.DummyItem>(getActivity(),
-                android.R.layout.simple_list_item_1, android.R.id.text1, DummyContent.ITEMS));
-    }
-
-
-    @Override
-    public void onAttach(Activity activity) {
-        super.onAttach(activity);
-        try {
-            mListener = (OnFragmentInteractionListener) activity;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(activity.toString()
-                    + " must implement OnFragmentInteractionListener");
+            name = getArguments().getString(ARG_NAME);
         }
     }
 
     @Override
-    public void onDetach() {
-        super.onDetach();
-        mListener = null;
+    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+                             Bundle savedInstanceState) {
+        // Inflate the layout for this fragment
+        return inflater.inflate(R.layout.fragment_master, container, false);
     }
 
     @Override
-    public void onListItemClick(ListView l, View v, int position, long id) {
-        super.onListItemClick(l, v, position, id);
-
-        if (null != mListener) {
-            // Notify the active callbacks interface (the activity, if the
-            // fragment is attached to one) that an item has been selected.
-            mListener.onFragmentInteraction(DummyContent.ITEMS.get(position).id);
-        }
+    public void onResume() {
+        super.onResume();
+        progressDialog = ProgressDialog.show(getContext(), null, getString(R.string.discovering_loading), true, false);
+        Thread dismissThread = new Thread() {
+            @Override
+            public void run() {
+                try {
+                    sleep(12 * 1000);
+                    progressDialog.dismiss();
+                } catch (InterruptedException e) {
+                    e.printStackTrace();
+                }
+            }
+        };
+        dismissThread.start();
     }
 
     @Override
-    public void setSocket(Socket socket) {
-
+    public void onStop() {
+        super.onStop();
+        progressDialog.dismiss();
     }
 
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p/>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
-//    public interface OnFragmentInteractionListener {
-//        // TODO: Update argument type and name
-//        public void onFragmentInteraction(String id);
-//    }
-
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(Uri uri) {
+//        if (mListener != null) {
+//            mListener.onFragmentInteraction(uri);
+//        }
+    }
 }

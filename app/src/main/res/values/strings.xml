@@ -6,9 +6,13 @@
     <!--Data Fragment-->
     <string name="enter_your_name">Ingresa tu Nombre</string>
     <string name="select_your_type">Selecciona el tipo</string>
-    <string name="master">Master</string>
-    <string name="slave">Esclavo</string>
+    <string name="master_btn">Master</string>
+    <string name="slave_btn">Esclavo</string>
 
     <!--Slave Fragment-->
-    <string name="loading_text">Esperando conexión Bluetooth</string>
+    <string name="server_loading">Esperando conexión Bluetooth</string>
+
+    <!--Master Fragment-->
+    <string name="discovering_loading">Buscando dispositivos Bluetooth</string>
+    <string name="found_devices">Dispositivos Encontrados</string>
 </resources>

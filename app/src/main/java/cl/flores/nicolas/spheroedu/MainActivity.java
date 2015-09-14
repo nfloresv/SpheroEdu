@@ -1,22 +1,19 @@
 package cl.flores.nicolas.spheroedu;
 
+import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import cl.flores.nicolas.spheroedu.fragments.DataFragment;
 import cl.flores.nicolas.spheroedu.fragments.MasterFragment;
 import cl.flores.nicolas.spheroedu.fragments.SlaveFragment;
-import cl.flores.nicolas.spheroedu.interfaces.OnFragmentInteractionListener;
 
-public class MainActivity extends AppCompatActivity implements OnFragmentInteractionListener {
+public class MainActivity extends AppCompatActivity {
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -50,17 +47,17 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
         return super.onOptionsItemSelected(item);
     }
 
-    public void masterButton (View view) {
+    public void masterButton(View view) {
         EditText nameET = (EditText) findViewById(R.id.nameET);
         String name = nameET.getText().toString();
 
-        Fragment master = MasterFragment.newInstance(name, "");
+        Fragment master = MasterFragment.newInstance(name);
 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.fragment, master).commit();
     }
 
-    public void slaveButton (View view) {
+    public void slaveButton(View view) {
         EditText nameET = (EditText) findViewById(R.id.nameET);
         String name = nameET.getText().toString();
 
@@ -68,10 +65,5 @@ public class MainActivity extends AppCompatActivity implements OnFragmentInterac
 
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.fragment, slave).commit();
-    }
-
-    @Override
-    public void onFragmentInteraction(String id) {
-
     }
 }

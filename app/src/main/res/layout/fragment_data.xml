@@ -1,67 +1,66 @@
-<RelativeLayout
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     tools:context="cl.flores.nicolas.spheroedu.fragments.DataFragment">
 
     <TextView
-        android:text="@string/enter_your_name"
+        android:id="@+id/nameTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nameTV"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:labelFor="@+id/nameET"
+        android:text="@string/enter_your_name"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:textStyle="bold"
-        android:typeface="serif"
-        android:labelFor="@+id/nameET"
-        android:layout_alignParentTop="true"
-        android:layout_centerHorizontal="true" />
+        android:typeface="serif" />
 
     <EditText
+        android:id="@+id/nameET"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:id="@+id/nameET"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/nameTV"
         android:allowUndo="true"
         android:autoText="false"
         android:capitalize="words"
         android:editable="false"
-        android:inputType="text|textCapWords|textPersonName|textAutoComplete|textAutoCorrect"
-        android:layout_below="@+id/nameTV"
-        android:layout_alignParentStart="true"
-        android:layout_alignParentEnd="true" />
+        android:inputType="text|textCapWords|textPersonName|textAutoComplete|textAutoCorrect" />
 
     <TextView
+        android:id="@+id/typeTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:textAppearance="?android:attr/textAppearanceLarge"
-        android:text="@string/select_your_type"
-        android:id="@+id/typeTV"
-        android:textStyle="bold"
-        android:typeface="serif"
+        android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:layout_centerHorizontal="true" />
+        android:text="@string/select_your_type"
+        android:textAppearance="?android:attr/textAppearanceLarge"
+        android:textStyle="bold"
+        android:typeface="serif" />
 
     <Button
+        android:id="@+id/masterBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/master"
-        android:id="@+id/masterBtn"
+        android:layout_alignParentStart="true"
+        android:layout_alignTop="@+id/slaveBtn"
         android:clickable="true"
         android:enabled="true"
         android:longClickable="false"
         android:onClick="masterButton"
-        android:layout_alignTop="@+id/slaveBtn"
-        android:layout_alignParentStart="true" />
+        android:text="@string/master_btn" />
 
     <Button
+        android:id="@+id/slaveBtn"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:text="@string/slave"
-        android:id="@+id/slaveBtn"
+        android:layout_alignParentEnd="true"
+        android:layout_below="@+id/typeTV"
         android:clickable="true"
         android:enabled="true"
         android:onClick="slaveButton"
-        android:layout_below="@+id/typeTV"
-        android:layout_alignParentEnd="true" />
+        android:text="@string/slave_btn" />
 
 </RelativeLayout>
