@@ -2,7 +2,7 @@ package cl.flores.nicolas.spheroedu.fragments;
 
 import android.app.Activity;
 import android.os.Bundle;
-import android.app.ListFragment;
+import android.support.v4.app.ListFragment;
 import android.view.View;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -11,6 +11,7 @@ import java.net.Socket;
 
 import cl.flores.nicolas.spheroedu.R;
 import cl.flores.nicolas.spheroedu.fragments.dummy.DummyContent;
+import cl.flores.nicolas.spheroedu.interfaces.OnFragmentInteractionListener;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 
 /**
@@ -108,9 +109,9 @@ public class MasterFragment extends ListFragment implements SocketInterface {
      * "http://developer.android.com/training/basics/fragments/communicating.html"
      * >Communicating with Other Fragments</a> for more information.
      */
-    public interface OnFragmentInteractionListener {
-        // TODO: Update argument type and name
-        public void onFragmentInteraction(String id);
-    }
+//    public interface OnFragmentInteractionListener {
+//        // TODO: Update argument type and name
+//        public void onFragmentInteraction(String id);
+//    }
 
 }
