@@ -3,7 +3,9 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:gravity="center_horizontal"
-    tools:context="cl.flores.nicolas.spheroedu.fragments.SlaveFragment">
+    tools:context="cl.flores.nicolas.spheroedu.fragments.SlaveFragment"
+    android:foregroundGravity="center_horizontal"
+    android:textAlignment="center">
 
     <TextView
         android:layout_width="wrap_content"

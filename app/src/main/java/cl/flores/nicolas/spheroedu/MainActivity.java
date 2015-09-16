@@ -1,5 +1,6 @@
 package cl.flores.nicolas.spheroedu;
 
+import android.bluetooth.BluetoothAdapter;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
@@ -8,21 +9,30 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 
 import cl.flores.nicolas.spheroedu.fragments.DataFragment;
 import cl.flores.nicolas.spheroedu.fragments.MasterFragment;
 import cl.flores.nicolas.spheroedu.fragments.SlaveFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        Fragment data = new DataFragment();
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().add(R.id.fragment, data).commit();
+        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        if (bluetoothAdapter != null) {
+            int request = getResources().getInteger(R.integer.REQUEST_ENABLE_BT);
+            Fragment data = DataFragment.newInstance(request);
+            FragmentManager manager = getSupportFragmentManager();
+            manager.beginTransaction().add(R.id.fragment, data).commit();
+        } else {
+            LinearLayout error = (LinearLayout) findViewById(R.id.errorLl);
+            error.setVisibility(View.VISIBLE);
+        }
     }
 
     @Override
