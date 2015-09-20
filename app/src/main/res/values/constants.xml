@@ -1,4 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
     <integer name="REQUEST_ENABLE_BT">0x1</integer>
+    <integer name="REQUEST_DISCOVERABLE_BT">0x2</integer>
+    <string name="APPLICATION_UUID">5CA3C87A-9331-4A73-AA42-737F971FDA37</string>
 </resources>

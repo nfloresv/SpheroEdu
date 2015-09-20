@@ -1,6 +1,6 @@
 package cl.flores.nicolas.spheroedu.interfaces;
 
-import java.net.Socket;
+import android.bluetooth.BluetoothSocket;
 
 public interface SocketInterface {
 
@@ -9,5 +9,5 @@ public interface SocketInterface {
      *
      * @param socket the connection with Sphero
      */
-    void setSocket(Socket socket);
+    void setSocket(BluetoothSocket socket);
 }
