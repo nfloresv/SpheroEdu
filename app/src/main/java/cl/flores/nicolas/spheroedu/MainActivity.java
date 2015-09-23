@@ -25,8 +25,7 @@ public class MainActivity extends AppCompatActivity {
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
-            int request = getResources().getInteger(R.integer.REQUEST_ENABLE_BT);
-            Fragment data = DataFragment.newInstance(request);
+            Fragment data = DataFragment.newInstance();
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().add(R.id.fragment, data).commit();
         } else {
