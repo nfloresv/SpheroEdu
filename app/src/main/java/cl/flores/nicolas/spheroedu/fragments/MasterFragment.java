@@ -4,6 +4,7 @@ import android.app.Activity;
 import android.app.ProgressDialog;
 import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothDevice;
+import android.bluetooth.BluetoothSocket;
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -24,22 +25,29 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import cl.flores.nicolas.spheroedu.R;
+import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
+import cl.flores.nicolas.spheroedu.threads.ClientBluetoothThread;
 
 /**
  * A simple {@link Fragment} subclass.
  * Use the {@link MasterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MasterFragment extends ListFragment implements View.OnClickListener {
+public class MasterFragment extends ListFragment implements View.OnClickListener, SocketInterface {
     private static final String ARG_NAME = "name";
+
     private final BroadcastReceiver receiver;
+    private final ArrayList<String> devices;
+    private final ArrayList<ClientBluetoothThread> clientBluetoothThreads;
+    private final ArrayList<BluetoothSocket> bluetoothSockets;
     private String name;
     private ProgressDialog progressDialog;
+    private ProgressDialog connectingDialog;
     private ArrayAdapter<String> adapter;
     private int REQUEST_ENABLE_BT;
     private BluetoothAdapter bluetoothAdapter;
     private Thread dismissThread;
-    private ArrayList<String> devices;
+
 
     public MasterFragment() {
         // Required empty public constructor
@@ -54,6 +62,8 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
             }
         };
         devices = new ArrayList<>();
+        clientBluetoothThreads = new ArrayList<>();
+        bluetoothSockets = new ArrayList<>();
     }
 
     /**
@@ -191,10 +201,33 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
     public void onStop() {
         super.onStop();
         getContext().unregisterReceiver(receiver);
+        for (ClientBluetoothThread thread : clientBluetoothThreads) {
+            thread.cancel();
+        }
+        connectingDialog.dismiss();
     }
 
     @Override
     public void onClick(View v) {
-        Toast.makeText(getContext(), "Connecting", Toast.LENGTH_SHORT).show();
+        connectingDialog = ProgressDialog.show(getContext(), null, getString(R.string.connecting_loading), true, false);
+        bluetoothAdapter.cancelDiscovery();
+
+        bluetoothSockets.clear();
+        clientBluetoothThreads.clear();
+
+        String appName = getString(R.string.app_name);
+        String uuid = getString(R.string.APPLICATION_UUID);
+        for (String mac : devices) {
+            BluetoothDevice device = bluetoothAdapter.getRemoteDevice(mac);
+            ClientBluetoothThread thread = new ClientBluetoothThread(device, this, appName, uuid);
+            clientBluetoothThreads.add(thread);
+            thread.start();
+        }
+    }
+
+    @Override
+    public void setSocket(BluetoothSocket socket) {
+        bluetoothSockets.add(socket);
+        // TODO get 3 socket and start exercise activity
     }
 }

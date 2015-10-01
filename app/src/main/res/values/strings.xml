@@ -19,4 +19,5 @@
     <string name="found_devices">Dispositivos Encontrados</string>
     <string name="max_devices">Solo es posible conectar con un máximo de 3 dispositivos</string>
     <string name="connect_btn">Conectar</string>
+    <string name="connecting_loading">Conectando con dispositivos Bluetooth</string>
 </resources>

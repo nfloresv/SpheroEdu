@@ -16,14 +16,13 @@ import cl.flores.nicolas.spheroedu.fragments.MasterFragment;
 import cl.flores.nicolas.spheroedu.fragments.SlaveFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private BluetoothAdapter bluetoothAdapter;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
             Fragment data = DataFragment.newInstance();
             FragmentManager manager = getSupportFragmentManager();

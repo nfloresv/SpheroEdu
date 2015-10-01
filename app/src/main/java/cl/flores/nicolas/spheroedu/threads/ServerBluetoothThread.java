@@ -12,8 +12,8 @@ import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 
 public class ServerBluetoothThread extends Thread {
     private final BluetoothServerSocket bluetoothServerSocket;
-    private SocketInterface socketInterface;
-    private String appName;
+    private final SocketInterface socketInterface;
+    private final String appName;
 
     public ServerBluetoothThread(SocketInterface socketInterface, String appName, String uuid) {
         this.socketInterface = socketInterface;
