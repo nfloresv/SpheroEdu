@@ -4,6 +4,7 @@
     <string name="action_settings">Settings</string>
     <string name="error">ERROR!</string>
     <string name="bluetooth_error_message">La aplicación necesita Bluetooth para funcionar</string>
+    <string name="name_restriction">Debe ingresar su nombre</string>
 
     <!--Data Fragment-->
     <string name="enter_your_name">Ingresa tu Nombre</string>
