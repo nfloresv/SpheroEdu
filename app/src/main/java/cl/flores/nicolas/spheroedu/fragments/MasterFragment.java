@@ -8,13 +8,15 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.net.Uri;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.ListFragment;
+import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.ArrayAdapter;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
 
@@ -28,7 +30,7 @@ import cl.flores.nicolas.spheroedu.R;
  * Use the {@link MasterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MasterFragment extends Fragment {
+public class MasterFragment extends ListFragment implements View.OnClickListener {
     private static final String ARG_NAME = "name";
     private final BroadcastReceiver receiver;
     private String name;
@@ -37,6 +39,7 @@ public class MasterFragment extends Fragment {
     private int REQUEST_ENABLE_BT;
     private BluetoothAdapter bluetoothAdapter;
     private Thread dismissThread;
+    private ArrayList<String> devices;
 
     public MasterFragment() {
         // Required empty public constructor
@@ -50,6 +53,7 @@ public class MasterFragment extends Fragment {
                 }
             }
         };
+        devices = new ArrayList<>();
     }
 
     /**
@@ -87,7 +91,7 @@ public class MasterFragment extends Fragment {
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
 
         ArrayList<String> devices = new ArrayList<>();
-        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_1, devices);
+        adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_multiple_choice, devices);
     }
 
     @Override
@@ -106,12 +110,39 @@ public class MasterFragment extends Fragment {
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_master, container, false);
+        View rootView = inflater.inflate(R.layout.fragment_master, container, false);
 
-        ListView devicesListView = (ListView) view.findViewById(R.id.devicesLv);
-        devicesListView.setAdapter(adapter);
+        setListAdapter(adapter);
 
-        return view;
+        Button connectBtn = (Button) rootView.findViewById(R.id.connectBtn);
+        connectBtn.setOnClickListener(this);
+
+        return rootView;
+    }
+
+    @Override
+    public void onListItemClick(ListView l, View v, int position, long id) {
+        super.onListItemClick(l, v, position, id);
+        SparseBooleanArray sp = getListView().getCheckedItemPositions();
+        devices.clear();
+
+        int count = 0;
+        for (int j = 0; j < sp.size(); ++j) {
+            if (sp.valueAt(j))
+                ++count;
+        }
+        if (count > 3) {
+            l.setItemChecked(position, false);
+            Toast.makeText(getContext(), R.string.max_devices, Toast.LENGTH_LONG).show();
+        }
+        for (int i = 0; i < sp.size(); i++) {
+            if (sp.valueAt(i)) {
+                int pos = sp.keyAt(i);
+                String name_dir = adapter.getItem(pos);
+                String dir = name_dir.split("\n")[1];
+                devices.add(dir);
+            }
+        }
     }
 
     @Override
@@ -162,10 +193,8 @@ public class MasterFragment extends Fragment {
         getContext().unregisterReceiver(receiver);
     }
 
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(Uri uri) {
-//        if (mListener != null) {
-//            mListener.onFragmentInteraction(uri);
-//        }
+    @Override
+    public void onClick(View v) {
+        Toast.makeText(getContext(), "Connecting", Toast.LENGTH_SHORT).show();
     }
 }

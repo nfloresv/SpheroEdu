@@ -17,10 +17,21 @@
         android:typeface="serif" />
 
     <ListView
-        android:id="@+id/devicesLv"
+        android:id="@id/android:list"
         android:layout_width="match_parent"
-        android:layout_height="fill_parent"
+        android:layout_height="wrap_content"
         android:layout_below="@+id/foundDevicesTv"
-        android:layout_centerHorizontal="true" />
+        android:layout_centerHorizontal="true"
+        android:choiceMode="multipleChoice"
+        android:layout_above="@+id/connectBtn" />
+
+    <Button
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:text="@string/connect_btn"
+        android:id="@+id/connectBtn"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true"
+        android:clickable="true" />
 
 </RelativeLayout>

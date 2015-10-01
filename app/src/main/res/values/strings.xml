@@ -17,4 +17,6 @@
     <!--Master Fragment-->
     <string name="discovering_loading">Buscando dispositivos Bluetooth</string>
     <string name="found_devices">Dispositivos Encontrados</string>
+    <string name="max_devices">Solo es posible conectar con un máximo de 3 dispositivos</string>
+    <string name="connect_btn">Conectar</string>
 </resources>
