@@ -1,6 +1,5 @@
 <resources>
     <!--Main Activity-->
-    <string name="app_name">SpheroEdu</string>
     <string name="action_settings">Settings</string>
     <string name="error">ERROR!</string>
     <string name="bluetooth_error_message">La aplicación necesita Bluetooth para funcionar</string>
@@ -18,7 +17,8 @@
     <!--Master Fragment-->
     <string name="discovering_loading">Buscando dispositivos Bluetooth</string>
     <string name="found_devices">Dispositivos Encontrados</string>
-    <string name="max_devices">Solo es posible conectar con un máximo de 3 dispositivos</string>
+    <string name="max_devices">No se puede seleccionar más dispositivos</string>
     <string name="connect_btn">Conectar</string>
+    <string name="min_devices">Seleccione dispositivos para conectar</string>
     <string name="connecting_loading">Conectando con dispositivos Bluetooth</string>
 </resources>
