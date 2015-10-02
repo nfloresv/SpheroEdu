@@ -204,7 +204,9 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
         for (ClientBluetoothThread thread : clientBluetoothThreads) {
             thread.cancel();
         }
-        connectingDialog.dismiss();
+        if (connectingDialog != null) {
+            connectingDialog.dismiss();
+        }
     }
 
     @Override
@@ -228,6 +230,13 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
     @Override
     public void setSocket(BluetoothSocket socket) {
         bluetoothSockets.add(socket);
-        // TODO get 3 socket and start exercise activity
+
+        String res = getString(R.string.connected_devises);
+        String message = String.format(res, bluetoothSockets.size(), devices.size());
+        Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+
+        if (bluetoothSockets.size() == devices.size()) {
+            // TODO get 3 socket and start exercise activity
+        }
     }
 }
