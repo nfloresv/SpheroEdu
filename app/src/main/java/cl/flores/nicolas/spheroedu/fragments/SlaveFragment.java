@@ -5,6 +5,7 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -21,15 +22,17 @@ import cl.flores.nicolas.spheroedu.threads.ServerBluetoothThread;
  * create an instance of this fragment.
  */
 public class SlaveFragment extends Fragment implements SocketInterface {
+    // TODO change fragment to activity
     private static final String ARG_NAME = "ARG_NAME";
 
+    private final int bluetoothDuration;
     private int REQUEST_DISCOVERABLE_BT;
     private String name;
     private ServerBluetoothThread server;
     private BluetoothSocket socket;
 
     public SlaveFragment() {
-        // Required empty public constructor
+        bluetoothDuration = 300;
     }
 
     /**
@@ -56,7 +59,7 @@ public class SlaveFragment extends Fragment implements SocketInterface {
         REQUEST_DISCOVERABLE_BT = getResources().getInteger(R.integer.REQUEST_DISCOVERABLE_BT);
 
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
-        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, 300);
+        discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, bluetoothDuration);
         startActivityForResult(discoverableIntent, REQUEST_DISCOVERABLE_BT);
     }
 
@@ -65,7 +68,7 @@ public class SlaveFragment extends Fragment implements SocketInterface {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DISCOVERABLE_BT) {
             Toast.makeText(getContext(), R.string.bluetooth_error_message, Toast.LENGTH_LONG).show();
-        } else if (resultCode == Activity.RESULT_OK && requestCode == REQUEST_DISCOVERABLE_BT) {
+        } else if ((resultCode == Activity.RESULT_OK || resultCode == bluetoothDuration) && requestCode == REQUEST_DISCOVERABLE_BT) {
             String appName = getString(R.string.app_name);
             String uuid = getString(R.string.APPLICATION_UUID);
             server = new ServerBluetoothThread(this, appName, uuid);
@@ -82,7 +85,7 @@ public class SlaveFragment extends Fragment implements SocketInterface {
     @Override
     public void onResume() {
         super.onResume();
-        if (server != null) {
+        if (server != null && !server.isAlive()) {
             server.start();
         }
     }
@@ -99,6 +102,8 @@ public class SlaveFragment extends Fragment implements SocketInterface {
     @Override
     public void setSocket(BluetoothSocket socket) {
         this.socket = socket;
-        server.cancel();
+        Looper.prepare();
+        Toast.makeText(getContext(), "Conectado", Toast.LENGTH_LONG).show();
+        Looper.loop();
     }
 }

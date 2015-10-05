@@ -28,6 +28,7 @@ public class MainActivity extends AppCompatActivity {
             FragmentManager manager = getSupportFragmentManager();
             manager.beginTransaction().add(R.id.fragment, data).commit();
         } else {
+            // TODO change layout to fragment
             LinearLayout error = (LinearLayout) findViewById(R.id.errorLl);
             error.setVisibility(View.VISIBLE);
         }

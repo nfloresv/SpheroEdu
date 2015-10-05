@@ -10,8 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
+import android.os.Looper;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.ListFragment;
+import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,6 +22,13 @@ import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.Toast;
+
+import com.orbotix.Sphero;
+import com.orbotix.classic.DiscoveryAgentClassic;
+import com.orbotix.classic.RobotClassic;
+import com.orbotix.common.DiscoveryException;
+import com.orbotix.common.Robot;
+import com.orbotix.common.RobotChangedStateListener;
 
 import java.util.ArrayList;
 import java.util.Set;
@@ -33,7 +42,8 @@ import cl.flores.nicolas.spheroedu.threads.ClientBluetoothThread;
  * Use the {@link MasterFragment#newInstance} factory method to
  * create an instance of this fragment.
  */
-public class MasterFragment extends ListFragment implements View.OnClickListener, SocketInterface {
+public class MasterFragment extends ListFragment implements View.OnClickListener, SocketInterface, RobotChangedStateListener {
+    // TODO change fragment to activity
     private static final String ARG_NAME = "name";
 
     private final BroadcastReceiver receiver;
@@ -46,7 +56,9 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
     private ArrayAdapter<String> adapter;
     private int REQUEST_ENABLE_BT;
     private BluetoothAdapter bluetoothAdapter;
+    private DiscoveryAgentClassic agentClassic;
     private Thread dismissThread;
+    private Sphero sphero;
 
 
     public MasterFragment() {
@@ -99,6 +111,7 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
         }
         REQUEST_ENABLE_BT = getResources().getInteger(R.integer.REQUEST_ENABLE_BT);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
+        agentClassic = DiscoveryAgentClassic.getInstance();
 
         ArrayList<String> devices = new ArrayList<>();
         adapter = new ArrayAdapter<>(getContext(), android.R.layout.simple_list_item_multiple_choice, devices);
@@ -109,6 +122,8 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
         super.onStart();
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         getContext().registerReceiver(receiver, filter);
+
+        agentClassic.addRobotStateListener(this);
 
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -167,7 +182,7 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
     @Override
     public void onPause() {
         super.onPause();
-        bluetoothAdapter.cancelDiscovery();
+        agentClassic.stopDiscovery();
         progressDialog.dismiss();
         dismissThread.interrupt();
     }
@@ -182,6 +197,13 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
 
     private void searchDevices() {
         adapter.clear();
+
+        try {
+            agentClassic.startDiscovery(getContext());
+        } catch (DiscoveryException e) {
+            Log.e(getString(R.string.app_name), "Error starting discovery", e);
+        }
+
         dismissThread = new Thread() {
             @Override
             public void run() {
@@ -194,25 +216,30 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
             }
         };
         getPairedDevices();
-        bluetoothAdapter.startDiscovery();
     }
 
     @Override
     public void onStop() {
         super.onStop();
         getContext().unregisterReceiver(receiver);
+        agentClassic.removeRobotStateListener(this);
+
         for (ClientBluetoothThread thread : clientBluetoothThreads) {
             thread.cancel();
         }
         if (connectingDialog != null) {
             connectingDialog.dismiss();
         }
+
+        if (sphero != null) {
+            sphero.disconnect();
+        }
     }
 
     @Override
     public void onClick(View v) {
-        connectingDialog = ProgressDialog.show(getContext(), null, getString(R.string.connecting_loading), true, false);
-        bluetoothAdapter.cancelDiscovery();
+//        connectingDialog = ProgressDialog.show(getContext(), null, getString(R.string.connecting_loading), true, false);
+        agentClassic.stopDiscovery();
 
         bluetoothSockets.clear();
         clientBluetoothThreads.clear();
@@ -231,12 +258,34 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
     public void setSocket(BluetoothSocket socket) {
         bluetoothSockets.add(socket);
 
+        Looper.prepare();
         String res = getString(R.string.connected_devises);
         String message = String.format(res, bluetoothSockets.size(), devices.size());
         Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+        Looper.loop();
 
         if (bluetoothSockets.size() == devices.size()) {
             // TODO get 3 socket and start exercise activity
+            Looper.prepare();
+            Toast.makeText(getContext(), "Conectado", Toast.LENGTH_LONG).show();
+            Looper.loop();
+        }
+    }
+
+    @Override
+    public void handleRobotChangedState(Robot robot, RobotChangedStateNotificationType type) {
+        Toast.makeText(getContext(), "Receive", Toast.LENGTH_SHORT).show();
+        switch (type) {
+            case Online:
+                Toast.makeText(getContext(), "Robot online", Toast.LENGTH_SHORT).show();
+                if (robot instanceof RobotClassic) {
+                    sphero = new Sphero(robot);
+                    Toast.makeText(getContext(), "Shpero", Toast.LENGTH_SHORT).show();
+                }
+                break;
+            case Disconnected:
+                Toast.makeText(getContext(), "Robot disconnected", Toast.LENGTH_SHORT).show();
+                break;
         }
     }
 }
