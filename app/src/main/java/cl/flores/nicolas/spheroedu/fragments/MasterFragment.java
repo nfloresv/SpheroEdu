@@ -150,13 +150,14 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
         super.onListItemClick(l, v, position, id);
         SparseBooleanArray sp = getListView().getCheckedItemPositions();
         devices.clear();
+        int MAX_DEVICES = getResources().getInteger(R.integer.MAX_CONNECTED_DEVICES);
 
         int count = 0;
         for (int j = 0; j < sp.size(); ++j) {
             if (sp.valueAt(j))
                 ++count;
         }
-        if (count > 3) {
+        if (count > MAX_DEVICES) {
             l.setItemChecked(position, false);
             Toast.makeText(getContext(), R.string.max_devices, Toast.LENGTH_LONG).show();
         }
@@ -238,6 +239,12 @@ public class MasterFragment extends ListFragment implements View.OnClickListener
 
     @Override
     public void onClick(View v) {
+        int MIN_DEVICES = getResources().getInteger(R.integer.MIN_CONNECTED_DEVICES);
+        if (devices.size() < MIN_DEVICES) {
+            Toast.makeText(getContext(), R.string.min_devices, Toast.LENGTH_LONG).show();
+            return;
+        }
+
 //        connectingDialog = ProgressDialog.show(getContext(), null, getString(R.string.connecting_loading), true, false);
         agentClassic.stopDiscovery();
 

@@ -10,6 +10,7 @@ import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.Toast;
 
 import cl.flores.nicolas.spheroedu.fragments.DataFragment;
 import cl.flores.nicolas.spheroedu.fragments.MasterFragment;
@@ -60,8 +61,12 @@ public class MainActivity extends AppCompatActivity {
         EditText nameET = (EditText) findViewById(R.id.nameET);
         String name = nameET.getText().toString();
 
-        Fragment master = MasterFragment.newInstance(name);
+        if (name.isEmpty()) {
+            Toast.makeText(this, R.string.name_restriction, Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        Fragment master = MasterFragment.newInstance(name);
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.fragment, master).commit();
     }
@@ -70,8 +75,12 @@ public class MainActivity extends AppCompatActivity {
         EditText nameET = (EditText) findViewById(R.id.nameET);
         String name = nameET.getText().toString();
 
-        Fragment slave = SlaveFragment.newInstance(name);
+        if (name.isEmpty()) {
+            Toast.makeText(this, R.string.name_restriction, Toast.LENGTH_LONG).show();
+            return;
+        }
 
+        Fragment slave = SlaveFragment.newInstance(name);
         FragmentManager manager = getSupportFragmentManager();
         manager.beginTransaction().replace(R.id.fragment, slave).commit();
     }
