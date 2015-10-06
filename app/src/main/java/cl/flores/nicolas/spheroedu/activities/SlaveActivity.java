@@ -1,4 +1,4 @@
-package cl.flores.nicolas.spheroedu.fragments;
+package cl.flores.nicolas.spheroedu.activities;
 
 import android.app.Activity;
 import android.bluetooth.BluetoothAdapter;
@@ -6,56 +6,29 @@ import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Looper;
-import android.support.v4.app.Fragment;
-import android.view.LayoutInflater;
-import android.view.View;
-import android.view.ViewGroup;
+import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import cl.flores.nicolas.spheroedu.R;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 import cl.flores.nicolas.spheroedu.threads.ServerBluetoothThread;
 
-/**
- * A simple {@link Fragment} subclass.
- * Use the {@link SlaveFragment#newInstance} factory method to
- * create an instance of this fragment.
- */
-public class SlaveFragment extends Fragment implements SocketInterface {
-    // TODO change fragment to activity
-    private static final String ARG_NAME = "ARG_NAME";
-
-    private final int bluetoothDuration;
+public class SlaveActivity extends AppCompatActivity implements SocketInterface {
+    private final int bluetoothDuration = 300;
     private int REQUEST_DISCOVERABLE_BT;
     private String name;
     private ServerBluetoothThread server;
     private BluetoothSocket socket;
 
-    public SlaveFragment() {
-        bluetoothDuration = 300;
-    }
-
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param user_name name of the user.
-     * @return A new instance of fragment SlaveFragment.
-     */
-    public static SlaveFragment newInstance(String user_name) {
-        SlaveFragment fragment = new SlaveFragment();
-        Bundle args = new Bundle();
-        args.putString(ARG_NAME, user_name);
-        fragment.setArguments(args);
-        return fragment;
-    }
-
     @Override
-    public void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (getArguments() != null) {
-            name = getArguments().getString(ARG_NAME);
+        if (savedInstanceState != null) {
+            String bundle_params = getString(R.string.USER_NAME);
+            name = savedInstanceState.getString(bundle_params);
         }
+        setContentView(R.layout.activity_slave);
+
         REQUEST_DISCOVERABLE_BT = getResources().getInteger(R.integer.REQUEST_DISCOVERABLE_BT);
 
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
@@ -67,19 +40,12 @@ public class SlaveFragment extends Fragment implements SocketInterface {
     public void onActivityResult(int requestCode, int resultCode, Intent data) {
         super.onActivityResult(requestCode, resultCode, data);
         if (resultCode == Activity.RESULT_CANCELED && requestCode == REQUEST_DISCOVERABLE_BT) {
-            Toast.makeText(getContext(), R.string.bluetooth_error_message, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.bluetooth_error_message, Toast.LENGTH_LONG).show();
         } else if ((resultCode == Activity.RESULT_OK || resultCode == bluetoothDuration) && requestCode == REQUEST_DISCOVERABLE_BT) {
             String appName = getString(R.string.app_name);
             String uuid = getString(R.string.APPLICATION_UUID);
             server = new ServerBluetoothThread(this, appName, uuid);
         }
-    }
-
-    @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
-                             Bundle savedInstanceState) {
-        // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_slave, container, false);
     }
 
     @Override
@@ -98,12 +64,12 @@ public class SlaveFragment extends Fragment implements SocketInterface {
         }
     }
 
-    // TODO start excersice activity with name a socket
     @Override
     public void setSocket(BluetoothSocket socket) {
         this.socket = socket;
+        // TODO start excersice activity with name a socket
         Looper.prepare();
-        Toast.makeText(getContext(), "Conectado", Toast.LENGTH_LONG).show();
+        Toast.makeText(this, "Conectado", Toast.LENGTH_LONG).show();
         Looper.loop();
     }
 }

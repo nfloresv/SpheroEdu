@@ -20,6 +20,12 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity
+            android:name=".activities.SlaveActivity"
+            android:label="@string/SLAVE_APP_NAME" />
+        <activity
+            android:name=".activities.MasterActivity"
+            android:label="@string/MASTER_APP_NAME" />
     </application>
 
 </manifest>

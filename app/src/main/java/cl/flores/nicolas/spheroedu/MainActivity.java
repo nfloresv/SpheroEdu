@@ -1,20 +1,21 @@
 package cl.flores.nicolas.spheroedu;
 
 import android.bluetooth.BluetoothAdapter;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import cl.flores.nicolas.spheroedu.activities.MasterActivity;
+import cl.flores.nicolas.spheroedu.activities.SlaveActivity;
 import cl.flores.nicolas.spheroedu.fragments.DataFragment;
-import cl.flores.nicolas.spheroedu.fragments.MasterFragment;
-import cl.flores.nicolas.spheroedu.fragments.SlaveFragment;
+import cl.flores.nicolas.spheroedu.fragments.ErrorFragment;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -23,16 +24,18 @@ public class MainActivity extends AppCompatActivity {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        FragmentTransaction manager = getSupportFragmentManager().beginTransaction();
+
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
             Fragment data = DataFragment.newInstance();
-            FragmentManager manager = getSupportFragmentManager();
-            manager.beginTransaction().add(R.id.fragment, data).commit();
+            manager.add(R.id.fragment, data);
         } else {
-            // TODO change layout to fragment
-            LinearLayout error = (LinearLayout) findViewById(R.id.errorLl);
-            error.setVisibility(View.VISIBLE);
+            String error_message = getString(R.string.bluetooth_error_message);
+            Fragment error = ErrorFragment.newInstance(error_message);
+            manager.add(R.id.fragment, error);
         }
+        manager.commit();
     }
 
     @Override
@@ -66,9 +69,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Fragment master = MasterFragment.newInstance(name);
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.fragment, master).commit();
+        Intent master = new Intent(this, MasterActivity.class);
+        String bundle_param = getString(R.string.USER_NAME);
+        master.putExtra(bundle_param, name);
+        startActivity(master);
+        finish();
     }
 
     public void slaveButton(View view) {
@@ -80,8 +85,10 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
-        Fragment slave = SlaveFragment.newInstance(name);
-        FragmentManager manager = getSupportFragmentManager();
-        manager.beginTransaction().replace(R.id.fragment, slave).commit();
+        Intent slave = new Intent(this, SlaveActivity.class);
+        String bundle_param = getString(R.string.USER_NAME);
+        slave.putExtra(bundle_param, name);
+        startActivity(slave);
+        finish();
     }
 }

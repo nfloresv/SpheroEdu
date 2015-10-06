@@ -8,46 +8,6 @@
     android:paddingTop="@dimen/activity_vertical_margin"
     tools:context=".MainActivityFragment">
 
-    <LinearLayout
-        android:id="@+id/errorLl"
-        android:layout_width="match_parent"
-        android:layout_height="wrap_content"
-        android:layout_centerInParent="true"
-        android:orientation="vertical"
-        android:visibility="gone">
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:foregroundGravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:text="@string/error"
-            android:textAlignment="center"
-            android:textAppearance="?android:attr/textAppearanceLarge"
-            android:textStyle="bold"
-            android:typeface="serif" />
-
-        <ImageView
-            android:layout_width="169sp"
-            android:layout_height="200sp"
-            android:layout_gravity="center_horizontal"
-            android:layout_marginBottom="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin"
-            android:contentDescription="@string/bluetooth_error_message"
-            android:foregroundGravity="center_horizontal"
-            android:src="@drawable/sick_android" />
-
-        <TextView
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_gravity="center_horizontal"
-            android:foregroundGravity="center_horizontal"
-            android:gravity="center_horizontal"
-            android:text="@string/bluetooth_error_message"
-            android:textAlignment="center" />
-    </LinearLayout>
-
     <FrameLayout
         android:id="@+id/fragment"
         android:layout_width="match_parent"
