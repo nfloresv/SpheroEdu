@@ -11,10 +11,10 @@
     <string name="master_btn">Master</string>
     <string name="slave_btn">Esclavo</string>
 
-    <!--Slave Fragment-->
+    <!--Slave Activity-->
     <string name="server_loading">Esperando conexión Bluetooth</string>
 
-    <!--Master Fragment-->
+    <!--Master Activity-->
     <string name="discovering_loading">Buscando dispositivos Bluetooth</string>
     <string name="found_devices">Dispositivos Encontrados</string>
     <string name="max_devices">No se puede seleccionar más dispositivos</string>
@@ -22,4 +22,6 @@
     <string name="min_devices">Seleccione dispositivos para conectar</string>
     <string name="connecting_loading">Conectando con dispositivos Bluetooth</string>
     <string name="connected_devises">Conectado con %1$d de %2$d dispositivos</string>
+    <string name="sphero_connected">Conectado con Sphero %1$s</string>
+    <string name="sphero_offline">Sphero %1$s desconectado</string>
 </resources>

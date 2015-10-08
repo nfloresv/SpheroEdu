@@ -19,8 +19,9 @@ import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.Toast;
 
+import com.orbotix.ConvenienceRobot;
+import com.orbotix.DualStackDiscoveryAgent;
 import com.orbotix.Sphero;
-import com.orbotix.classic.DiscoveryAgentClassic;
 import com.orbotix.classic.RobotClassic;
 import com.orbotix.common.DiscoveryException;
 import com.orbotix.common.Robot;
@@ -38,15 +39,15 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     private final ArrayList<String> devices;
     private final ArrayList<ClientBluetoothThread> clientBluetoothThreads;
     private final ArrayList<BluetoothSocket> bluetoothSockets;
+    private final ArrayList<ConvenienceRobot> spheros;
     private String name;
     private ProgressDialog progressDialog;
     private ProgressDialog connectingDialog;
     private ArrayAdapter<String> adapter;
     private int REQUEST_ENABLE_BT;
     private BluetoothAdapter bluetoothAdapter;
-    private DiscoveryAgentClassic agentClassic;
+    private DualStackDiscoveryAgent agentClassic;
     private Thread dismissThread;
-    private Sphero sphero;
 
     public MasterActivity() {
         super();
@@ -63,6 +64,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         devices = new ArrayList<>();
         clientBluetoothThreads = new ArrayList<>();
         bluetoothSockets = new ArrayList<>();
+        spheros = new ArrayList<>();
     }
 
     @Override
@@ -92,6 +94,19 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     }
 
     @Override
+    protected void onDestroy() {
+        super.onDestroy();
+        for (ConvenienceRobot sphero : spheros) {
+            sphero.sleep();
+            sphero.disconnect();
+        }
+
+        for (ClientBluetoothThread thread : clientBluetoothThreads) {
+            thread.cancel();
+        }
+    }
+
+    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
@@ -102,7 +117,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
 
         REQUEST_ENABLE_BT = getResources().getInteger(R.integer.REQUEST_ENABLE_BT);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        agentClassic = DiscoveryAgentClassic.getInstance();
+        agentClassic = DualStackDiscoveryAgent.getInstance();
 
         ArrayList<String> devices = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, devices);
@@ -154,15 +169,8 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         this.unregisterReceiver(receiver);
         agentClassic.removeRobotStateListener(this);
 
-        for (ClientBluetoothThread thread : clientBluetoothThreads) {
-            thread.cancel();
-        }
         if (connectingDialog != null) {
             connectingDialog.dismiss();
-        }
-
-        if (sphero != null) {
-            sphero.disconnect();
         }
     }
 
@@ -186,17 +194,22 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
 
     @Override
     public void handleRobotChangedState(Robot robot, RobotChangedStateListener.RobotChangedStateNotificationType type) {
-        Toast.makeText(this, "Receive", Toast.LENGTH_SHORT).show();
         switch (type) {
+            case Offline:
+                String offline = getString(R.string.sphero_offline);
+                Toast.makeText(this, String.format(offline, robot.getName()), Toast.LENGTH_SHORT).show();
+                break;
             case Online:
-                Toast.makeText(this, "Robot online", Toast.LENGTH_SHORT).show();
                 if (robot instanceof RobotClassic) {
-                    sphero = new Sphero(robot);
-                    Toast.makeText(this, "Shpero", Toast.LENGTH_SHORT).show();
+                    ConvenienceRobot sphero = new Sphero(robot);
+                    spheros.add(sphero);
+                    String online = getString(R.string.sphero_connected);
+                    Toast.makeText(this, String.format(online, robot.getName()), Toast.LENGTH_SHORT).show();
                 }
                 break;
             case Disconnected:
-                Toast.makeText(this, "Robot disconnected", Toast.LENGTH_SHORT).show();
+                String disconnected = getString(R.string.sphero_offline);
+                Toast.makeText(this, String.format(disconnected, robot.getName()), Toast.LENGTH_SHORT).show();
                 break;
         }
     }
@@ -241,7 +254,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
             return;
         }
 
-//        connectingDialog = ProgressDialog.show(getContext(), null, getString(R.string.connecting_loading), true, false);
+        connectingDialog = ProgressDialog.show(this, null, getString(R.string.connecting_loading), true, false);
         agentClassic.stopDiscovery();
 
         bluetoothSockets.clear();

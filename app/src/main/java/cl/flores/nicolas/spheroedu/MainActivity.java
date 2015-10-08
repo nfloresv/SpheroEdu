@@ -18,22 +18,24 @@ import cl.flores.nicolas.spheroedu.fragments.DataFragment;
 import cl.flores.nicolas.spheroedu.fragments.ErrorFragment;
 
 public class MainActivity extends AppCompatActivity {
+    private String bundle_param;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+        bundle_param = getString(R.string.USER_NAME);
 
         FragmentTransaction manager = getSupportFragmentManager().beginTransaction();
 
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         if (bluetoothAdapter != null) {
             Fragment data = DataFragment.newInstance();
-            manager.add(R.id.fragment, data);
+            manager.replace(R.id.fragment, data);
         } else {
             String error_message = getString(R.string.bluetooth_error_message);
             Fragment error = ErrorFragment.newInstance(error_message);
-            manager.add(R.id.fragment, error);
+            manager.replace(R.id.fragment, error);
         }
         manager.commit();
     }
@@ -65,12 +67,11 @@ public class MainActivity extends AppCompatActivity {
         String name = nameET.getText().toString();
 
         if (name.isEmpty()) {
-            Toast.makeText(this, R.string.name_restriction, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.name_restriction, Toast.LENGTH_SHORT).show();
             return;
         }
 
         Intent master = new Intent(this, MasterActivity.class);
-        String bundle_param = getString(R.string.USER_NAME);
         master.putExtra(bundle_param, name);
         startActivity(master);
         finish();
@@ -81,12 +82,11 @@ public class MainActivity extends AppCompatActivity {
         String name = nameET.getText().toString();
 
         if (name.isEmpty()) {
-            Toast.makeText(this, R.string.name_restriction, Toast.LENGTH_LONG).show();
+            Toast.makeText(this, R.string.name_restriction, Toast.LENGTH_SHORT).show();
             return;
         }
 
         Intent slave = new Intent(this, SlaveActivity.class);
-        String bundle_param = getString(R.string.USER_NAME);
         slave.putExtra(bundle_param, name);
         startActivity(slave);
         finish();
