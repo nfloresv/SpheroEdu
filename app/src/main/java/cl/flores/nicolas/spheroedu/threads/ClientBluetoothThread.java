@@ -7,6 +7,7 @@ import android.util.Log;
 import java.io.IOException;
 import java.util.UUID;
 
+import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 
 public class ClientBluetoothThread extends Thread {
@@ -15,12 +16,12 @@ public class ClientBluetoothThread extends Thread {
     private final SocketInterface socketInterface;
 
 
-    public ClientBluetoothThread(BluetoothDevice device, SocketInterface socketInterface, String appName, String uuid) {
+    public ClientBluetoothThread(BluetoothDevice device, SocketInterface socketInterface, String appName) {
         this.appName = appName;
         this.socketInterface = socketInterface;
         BluetoothSocket tmp = null;
         try {
-            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(uuid));
+            tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.APPLICATION_UUID));
         } catch (IOException e) {
             Log.e(appName, "Error getting connection", e);
         }

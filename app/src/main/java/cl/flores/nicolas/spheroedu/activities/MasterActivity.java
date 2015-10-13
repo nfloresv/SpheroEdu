@@ -21,7 +21,6 @@ import android.widget.Toast;
 
 import com.orbotix.ConvenienceRobot;
 import com.orbotix.DualStackDiscoveryAgent;
-import com.orbotix.Sphero;
 import com.orbotix.classic.RobotClassic;
 import com.orbotix.common.DiscoveryException;
 import com.orbotix.common.Robot;
@@ -31,6 +30,8 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import cl.flores.nicolas.spheroedu.R;
+import cl.flores.nicolas.spheroedu.Utils.Constants;
+import cl.flores.nicolas.spheroedu.Utils.SpheroColors;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 import cl.flores.nicolas.spheroedu.threads.ClientBluetoothThread;
 
@@ -40,13 +41,13 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     private final ArrayList<ClientBluetoothThread> clientBluetoothThreads;
     private final ArrayList<BluetoothSocket> bluetoothSockets;
     private final ArrayList<ConvenienceRobot> spheros;
+    private final int REQUEST_ENABLE_BT = Constants.REQUEST_ENABLE_BT;
     private String name;
     private ProgressDialog progressDialog;
     private ProgressDialog connectingDialog;
     private ArrayAdapter<String> adapter;
-    private int REQUEST_ENABLE_BT;
     private BluetoothAdapter bluetoothAdapter;
-    private DualStackDiscoveryAgent agentClassic;
+    private DualStackDiscoveryAgent discoveryAgent;
     private Thread dismissThread;
 
     public MasterActivity() {
@@ -72,14 +73,13 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         super.onListItemClick(l, v, position, id);
         SparseBooleanArray sp = getListView().getCheckedItemPositions();
         devices.clear();
-        int MAX_DEVICES = getResources().getInteger(R.integer.MAX_CONNECTED_DEVICES);
 
         int count = 0;
         for (int j = 0; j < sp.size(); ++j) {
             if (sp.valueAt(j))
                 ++count;
         }
-        if (count > MAX_DEVICES) {
+        if (count > Constants.MAX_CONNECTED_DEVICES) {
             l.setItemChecked(position, false);
             Toast.makeText(this, R.string.max_devices, Toast.LENGTH_LONG).show();
         }
@@ -115,9 +115,8 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         }
         setContentView(R.layout.activity_master);
 
-        REQUEST_ENABLE_BT = getResources().getInteger(R.integer.REQUEST_ENABLE_BT);
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        agentClassic = DualStackDiscoveryAgent.getInstance();
+        discoveryAgent = DualStackDiscoveryAgent.getInstance();
 
         ArrayList<String> devices = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, devices);
@@ -130,7 +129,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         IntentFilter filter = new IntentFilter(BluetoothDevice.ACTION_FOUND);
         registerReceiver(receiver, filter);
 
-        agentClassic.addRobotStateListener(this);
+        discoveryAgent.addRobotStateListener(this);
 
         if (!bluetoothAdapter.isEnabled()) {
             Intent enableBtIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_ENABLE);
@@ -150,7 +149,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     @Override
     public void onPause() {
         super.onPause();
-        agentClassic.stopDiscovery();
+        discoveryAgent.stopDiscovery();
         progressDialog.dismiss();
         dismissThread.interrupt();
     }
@@ -167,7 +166,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     public void onStop() {
         super.onStop();
         this.unregisterReceiver(receiver);
-        agentClassic.removeRobotStateListener(this);
+        discoveryAgent.removeRobotStateListener(this);
 
         if (connectingDialog != null) {
             connectingDialog.dismiss();
@@ -201,10 +200,15 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
                 break;
             case Online:
                 if (robot instanceof RobotClassic) {
-                    ConvenienceRobot sphero = new Sphero(robot);
+                    ConvenienceRobot sphero = new ConvenienceRobot(robot);
                     spheros.add(sphero);
                     String online = getString(R.string.sphero_connected);
                     Toast.makeText(this, String.format(online, robot.getName()), Toast.LENGTH_SHORT).show();
+                    sphero.setZeroHeading();
+                    float r = SpheroColors.decimalToFloat(42);
+                    float g = SpheroColors.decimalToFloat(182);
+                    float b = SpheroColors.decimalToFloat(7);
+                    sphero.setLed(r, g, b);
                 }
                 break;
             case Disconnected:
@@ -228,7 +232,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         adapter.clear();
 
         try {
-            agentClassic.startDiscovery(this);
+            discoveryAgent.startDiscovery(this);
         } catch (DiscoveryException e) {
             Log.e(getString(R.string.app_name), "Error starting discovery", e);
         }
@@ -248,23 +252,21 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     }
 
     public void connectButton(View v) {
-        int MIN_DEVICES = getResources().getInteger(R.integer.MIN_CONNECTED_DEVICES);
-        if (devices.size() < MIN_DEVICES) {
+        if (devices.size() < Constants.MIN_CONNECTED_DEVICES) {
             Toast.makeText(this, R.string.min_devices, Toast.LENGTH_LONG).show();
             return;
         }
 
         connectingDialog = ProgressDialog.show(this, null, getString(R.string.connecting_loading), true, false);
-        agentClassic.stopDiscovery();
+        discoveryAgent.stopDiscovery();
 
         bluetoothSockets.clear();
         clientBluetoothThreads.clear();
 
         String appName = getString(R.string.app_name);
-        String uuid = getString(R.string.APPLICATION_UUID);
         for (String mac : devices) {
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(mac);
-            ClientBluetoothThread thread = new ClientBluetoothThread(device, this, appName, uuid);
+            ClientBluetoothThread thread = new ClientBluetoothThread(device, this, appName);
             clientBluetoothThreads.add(thread);
             thread.start();
         }

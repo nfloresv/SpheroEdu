@@ -10,12 +10,13 @@ import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import cl.flores.nicolas.spheroedu.R;
+import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 import cl.flores.nicolas.spheroedu.threads.ServerBluetoothThread;
 
 public class SlaveActivity extends AppCompatActivity implements SocketInterface {
     private final int bluetoothDuration = 300;
-    private int REQUEST_DISCOVERABLE_BT;
+    private final int REQUEST_DISCOVERABLE_BT = Constants.REQUEST_DISCOVERABLE_BT;
     private String name;
     private ServerBluetoothThread server;
     private BluetoothSocket socket;
@@ -29,8 +30,6 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
         }
         setContentView(R.layout.activity_slave);
 
-        REQUEST_DISCOVERABLE_BT = getResources().getInteger(R.integer.REQUEST_DISCOVERABLE_BT);
-
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, bluetoothDuration);
         startActivityForResult(discoverableIntent, REQUEST_DISCOVERABLE_BT);
@@ -43,8 +42,7 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
             Toast.makeText(this, R.string.bluetooth_error_message, Toast.LENGTH_LONG).show();
         } else if ((resultCode == Activity.RESULT_OK || resultCode == bluetoothDuration) && requestCode == REQUEST_DISCOVERABLE_BT) {
             String appName = getString(R.string.app_name);
-            String uuid = getString(R.string.APPLICATION_UUID);
-            server = new ServerBluetoothThread(this, appName, uuid);
+            server = new ServerBluetoothThread(this, appName);
         }
     }
 
@@ -57,8 +55,8 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
     }
 
     @Override
-    public void onStop() {
-        super.onStop();
+    public void onDestroy() {
+        super.onDestroy();
         if (server != null) {
             server.cancel();
         }
@@ -67,7 +65,13 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
     @Override
     public void setSocket(BluetoothSocket socket) {
         this.socket = socket;
-        // TODO start excersice activity with name a socket
+        /*
+        * TODO start excersice activity with name a socket
+        * opciones:
+        *     pasar como bytes
+        *     pasar como parcelable
+        *     pasar como serializable
+        **/
         Looper.prepare();
         Toast.makeText(this, "Conectado", Toast.LENGTH_LONG).show();
         Looper.loop();
