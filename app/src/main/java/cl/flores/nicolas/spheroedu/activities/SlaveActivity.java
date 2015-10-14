@@ -5,21 +5,20 @@ import android.bluetooth.BluetoothAdapter;
 import android.bluetooth.BluetoothSocket;
 import android.content.Intent;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.widget.Toast;
 
 import cl.flores.nicolas.spheroedu.R;
+import cl.flores.nicolas.spheroedu.Utils.CommunicationManager;
 import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 import cl.flores.nicolas.spheroedu.threads.ServerBluetoothThread;
 
 public class SlaveActivity extends AppCompatActivity implements SocketInterface {
-    private final int bluetoothDuration = 300;
+    private final int bluetoothDuration = Constants.BLUETOOTH_DURAION;
     private final int REQUEST_DISCOVERABLE_BT = Constants.REQUEST_DISCOVERABLE_BT;
     private String name;
     private ServerBluetoothThread server;
-    private BluetoothSocket socket;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -64,16 +63,12 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
 
     @Override
     public void setSocket(BluetoothSocket socket) {
-        this.socket = socket;
-        /*
-        * TODO start excersice activity with name a socket
-        * opciones:
-        *     pasar como bytes
-        *     pasar como parcelable
-        *     pasar como serializable
-        **/
-        Looper.prepare();
-        Toast.makeText(this, "Conectado", Toast.LENGTH_LONG).show();
-        Looper.loop();
+        CommunicationManager manager = CommunicationManager.getInstance();
+        manager.putSocket(socket);
+        Intent exercise = new Intent(this, ExerciseActivity.class);
+        exercise.putExtra("name", name);
+        exercise.putExtra("master", false);
+        startActivity(exercise);
+        finish();
     }
 }

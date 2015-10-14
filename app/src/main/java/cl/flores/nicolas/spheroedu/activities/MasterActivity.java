@@ -30,6 +30,7 @@ import java.util.ArrayList;
 import java.util.Set;
 
 import cl.flores.nicolas.spheroedu.R;
+import cl.flores.nicolas.spheroedu.Utils.CommunicationManager;
 import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.Utils.SpheroColors;
 import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
@@ -184,10 +185,18 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         Looper.loop();
 
         if (bluetoothSockets.size() == devices.size()) {
-            // TODO get 3 socket and start exercise activity
-            Looper.prepare();
-            Toast.makeText(this, "Conectado", Toast.LENGTH_LONG).show();
-            Looper.loop();
+            CommunicationManager manager = CommunicationManager.getInstance();
+            for (BluetoothSocket bluetoothSocket : bluetoothSockets) {
+                manager.putSocket(bluetoothSocket);
+            }
+            for (ConvenienceRobot sphero : spheros) {
+                manager.putRobot(sphero);
+            }
+            Intent exercise = new Intent(this, ExerciseActivity.class);
+            exercise.putExtra("name", name);
+            exercise.putExtra("master", true);
+            startActivity(exercise);
+            finish();
         }
     }
 
