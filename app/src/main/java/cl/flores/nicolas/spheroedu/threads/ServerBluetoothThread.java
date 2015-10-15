@@ -14,17 +14,15 @@ import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 public class ServerBluetoothThread extends Thread {
     private final BluetoothServerSocket bluetoothServerSocket;
     private final SocketInterface socketInterface;
-    private final String appName;
 
     public ServerBluetoothThread(SocketInterface socketInterface, String appName) {
         this.socketInterface = socketInterface;
         BluetoothAdapter bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        this.appName = appName;
         BluetoothServerSocket tmp = null;
         try {
             tmp = bluetoothAdapter.listenUsingRfcommWithServiceRecord(appName, UUID.fromString(Constants.APPLICATION_UUID));
         } catch (IOException e) {
-            Log.e(appName, "Error getting connection", e);
+            Log.e(Constants.LOG_TAG, "Error getting server socket", e);
         }
         bluetoothServerSocket = tmp;
     }
@@ -35,14 +33,14 @@ public class ServerBluetoothThread extends Thread {
             try {
                 socket = bluetoothServerSocket.accept();
             } catch (IOException e) {
-                Log.e(appName, "Error accepting connection", e);
+                Log.e(Constants.LOG_TAG, "Error getting server connection", e);
                 break;
             }
             if (socket != null) {
                 try {
                     bluetoothServerSocket.close();
                 } catch (IOException e) {
-                    Log.e(appName, "Error closing connection", e);
+                    Log.e(Constants.LOG_TAG, "Error closing server connection", e);
                 } finally {
                     socketInterface.setSocket(socket);
                 }
@@ -55,7 +53,7 @@ public class ServerBluetoothThread extends Thread {
         try {
             bluetoothServerSocket.close();
         } catch (IOException e) {
-            Log.e(appName, "Error closing connection", e);
+            Log.e(Constants.LOG_TAG, "Error canceling server connection", e);
         }
     }
 }

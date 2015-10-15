@@ -20,7 +20,7 @@ public class CommunicationManager {
     }
 
     public static CommunicationManager getInstance() {
-        if (manager != null) {
+        if (manager == null) {
             manager = new CommunicationManager();
         }
         return manager;
@@ -40,9 +40,5 @@ public class CommunicationManager {
 
     public ArrayList<BluetoothSocket> getSockets() {
         return sockets;
-    }
-
-    public BluetoothSocket getSocket() {
-        return sockets.get(0);
     }
 }

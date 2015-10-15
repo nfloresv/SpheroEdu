@@ -12,18 +12,16 @@ import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 
 public class ClientBluetoothThread extends Thread {
     private final BluetoothSocket socket;
-    private final String appName;
     private final SocketInterface socketInterface;
 
 
-    public ClientBluetoothThread(BluetoothDevice device, SocketInterface socketInterface, String appName) {
-        this.appName = appName;
+    public ClientBluetoothThread(BluetoothDevice device, SocketInterface socketInterface) {
         this.socketInterface = socketInterface;
         BluetoothSocket tmp = null;
         try {
             tmp = device.createRfcommSocketToServiceRecord(UUID.fromString(Constants.APPLICATION_UUID));
         } catch (IOException e) {
-            Log.e(appName, "Error getting connection", e);
+            Log.e(Constants.LOG_TAG, "Error creating client socket", e);
         }
         socket = tmp;
     }
@@ -32,11 +30,11 @@ public class ClientBluetoothThread extends Thread {
         try {
             socket.connect();
         } catch (IOException connectException) {
-            Log.e(appName, "Error connecting", connectException);
+            Log.e(Constants.LOG_TAG, "Error connecting as client", connectException);
             try {
                 socket.close();
             } catch (IOException closeException) {
-                Log.e(appName, "Error closing connection", closeException);
+                Log.e(Constants.LOG_TAG, "Error closing client connection", closeException);
             }
             return;
         }
@@ -47,7 +45,7 @@ public class ClientBluetoothThread extends Thread {
         try {
             socket.close();
         } catch (IOException e) {
-            Log.e(appName, "Error closing connection", e);
+            Log.e(Constants.LOG_TAG, "Error canceling client connection", e);
         }
     }
 }

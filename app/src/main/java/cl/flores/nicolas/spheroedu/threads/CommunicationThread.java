@@ -1,18 +1,26 @@
 package cl.flores.nicolas.spheroedu.threads;
 
 import android.bluetooth.BluetoothSocket;
+import android.util.Log;
+
+import com.google.common.base.Charsets;
 
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 
+import cl.flores.nicolas.spheroedu.Utils.Constants;
+import cl.flores.nicolas.spheroedu.interfaces.MessageInterface;
+
 public class CommunicationThread extends Thread {
     private final BluetoothSocket socket;
     private final InputStream inStream;
     private final OutputStream outStream;
+    private final MessageInterface messageInterface;
 
-    public CommunicationThread(BluetoothSocket socket) {
+    public CommunicationThread(BluetoothSocket socket, MessageInterface messageInterface) {
         this.socket = socket;
+        this.messageInterface = messageInterface;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
 
@@ -20,6 +28,7 @@ public class CommunicationThread extends Thread {
             tmpIn = socket.getInputStream();
             tmpOut = socket.getOutputStream();
         } catch (IOException e) {
+            Log.e(Constants.LOG_TAG, "Error creating streams", e);
         }
 
         inStream = tmpIn;
@@ -33,17 +42,20 @@ public class CommunicationThread extends Thread {
         while (true) {
             try {
                 bytes = inStream.read(buffer);
-                //Send read message
+                String message = new String(buffer, 0, bytes, Charsets.UTF_8);
+                messageInterface.getMessage(message);
             } catch (IOException e) {
+                Log.e(Constants.LOG_TAG, "Error reading stream", e);
                 break;
             }
         }
     }
 
-    public void write(byte[] bytes) {
+    public void write(String message) {
         try {
-            outStream.write(bytes);
+            outStream.write(message.getBytes(Charsets.UTF_8));
         } catch (IOException e) {
+            Log.e(Constants.LOG_TAG, "Error writing stream", e);
         }
     }
 
@@ -51,6 +63,7 @@ public class CommunicationThread extends Thread {
         try {
             socket.close();
         } catch (IOException e) {
+            Log.e(Constants.LOG_TAG, "Error closing stream", e);
         }
     }
 }

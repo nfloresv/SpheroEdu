@@ -10,4 +10,7 @@ public class Constants {
     public static final int MAX_CONNECTED_DEVICES = 3;
     public static final int BLUETOOTH_DURAION = 300;
     public static final String APPLICATION_UUID = "5CA3C87A-9331-4A73-AA42-737F971FDA37";
+    public static final String BUNDLE_PARAM_USER_NAME = "USER_NAME";
+    public static final String BUNDLE_PARAM_MASTER = "MASTER";
+    public static final String LOG_TAG = "MEMORIA-NFLORES";
 }

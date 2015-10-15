@@ -95,24 +95,10 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     }
 
     @Override
-    protected void onDestroy() {
-        super.onDestroy();
-        for (ConvenienceRobot sphero : spheros) {
-            sphero.sleep();
-            sphero.disconnect();
-        }
-
-        for (ClientBluetoothThread thread : clientBluetoothThreads) {
-            thread.cancel();
-        }
-    }
-
-    @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            String bundle_params = getString(R.string.USER_NAME);
-            name = savedInstanceState.getString(bundle_params);
+            name = savedInstanceState.getString(Constants.BUNDLE_PARAM_USER_NAME);
         }
         setContentView(R.layout.activity_master);
 
@@ -178,13 +164,11 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     public void setSocket(BluetoothSocket socket) {
         bluetoothSockets.add(socket);
 
-        Looper.prepare();
-        String res = getString(R.string.connected_devises);
-        String message = String.format(res, bluetoothSockets.size(), devices.size());
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        Looper.loop();
-
         if (bluetoothSockets.size() == devices.size()) {
+            if (connectingDialog != null) {
+                connectingDialog.dismiss();
+            }
+
             CommunicationManager manager = CommunicationManager.getInstance();
             for (BluetoothSocket bluetoothSocket : bluetoothSockets) {
                 manager.putSocket(bluetoothSocket);
@@ -192,12 +176,22 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
             for (ConvenienceRobot sphero : spheros) {
                 manager.putRobot(sphero);
             }
+
+            Bundle extras = new Bundle();
+            extras.putString(Constants.BUNDLE_PARAM_USER_NAME, name);
+            extras.putBoolean(Constants.BUNDLE_PARAM_MASTER, true);
+
             Intent exercise = new Intent(this, ExerciseActivity.class);
-            exercise.putExtra("name", name);
-            exercise.putExtra("master", true);
+            exercise.putExtras(extras);
             startActivity(exercise);
             finish();
         }
+
+        Looper.prepare();
+        String res = getString(R.string.connected_devises);
+        String message = String.format(res, bluetoothSockets.size(), devices.size());
+        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
+        Looper.loop();
     }
 
     @Override
@@ -243,7 +237,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         try {
             discoveryAgent.startDiscovery(this);
         } catch (DiscoveryException e) {
-            Log.e(getString(R.string.app_name), "Error starting discovery", e);
+            Log.e(Constants.LOG_TAG, "Error starting discovery", e);
         }
 
         dismissThread = new Thread() {
@@ -272,10 +266,9 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         bluetoothSockets.clear();
         clientBluetoothThreads.clear();
 
-        String appName = getString(R.string.app_name);
         for (String mac : devices) {
             BluetoothDevice device = bluetoothAdapter.getRemoteDevice(mac);
-            ClientBluetoothThread thread = new ClientBluetoothThread(device, this, appName);
+            ClientBluetoothThread thread = new ClientBluetoothThread(device, this);
             clientBluetoothThreads.add(thread);
             thread.start();
         }

@@ -24,8 +24,7 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         if (savedInstanceState != null) {
-            String bundle_params = getString(R.string.USER_NAME);
-            name = savedInstanceState.getString(bundle_params);
+            name = savedInstanceState.getString(Constants.BUNDLE_PARAM_USER_NAME);
         }
         setContentView(R.layout.activity_slave);
 
@@ -54,20 +53,16 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
     }
 
     @Override
-    public void onDestroy() {
-        super.onDestroy();
-        if (server != null) {
-            server.cancel();
-        }
-    }
-
-    @Override
     public void setSocket(BluetoothSocket socket) {
         CommunicationManager manager = CommunicationManager.getInstance();
         manager.putSocket(socket);
+
+        Bundle extras = new Bundle();
+        extras.putString(Constants.BUNDLE_PARAM_USER_NAME, name);
+        extras.putBoolean(Constants.BUNDLE_PARAM_MASTER, false);
+
         Intent exercise = new Intent(this, ExerciseActivity.class);
-        exercise.putExtra("name", name);
-        exercise.putExtra("master", false);
+        exercise.putExtras(extras);
         startActivity(exercise);
         finish();
     }

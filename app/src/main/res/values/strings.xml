@@ -3,7 +3,6 @@
     <string name="app_name">SpheroEdu</string>
     <string name="MASTER_APP_NAME">Maestro SpheroEdu</string>
     <string name="SLAVE_APP_NAME">Esclavo SpheroEdu</string>
-    <string name="USER_NAME">user_name</string>
 
     <!--Main Activity-->
     <string name="action_settings">Settings</string>

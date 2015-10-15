@@ -12,19 +12,19 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.activities.MasterActivity;
 import cl.flores.nicolas.spheroedu.activities.SlaveActivity;
 import cl.flores.nicolas.spheroedu.fragments.DataFragment;
 import cl.flores.nicolas.spheroedu.fragments.ErrorFragment;
 
 public class MainActivity extends AppCompatActivity {
-    private String bundle_param;
+    private final String bundle_param = Constants.BUNDLE_PARAM_USER_NAME;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        bundle_param = getString(R.string.USER_NAME);
 
         FragmentTransaction manager = getSupportFragmentManager().beginTransaction();
 
