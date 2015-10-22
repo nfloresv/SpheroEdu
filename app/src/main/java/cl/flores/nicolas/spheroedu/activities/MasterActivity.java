@@ -97,10 +97,12 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            name = savedInstanceState.getString(Constants.BUNDLE_PARAM_USER_NAME);
-        }
         setContentView(R.layout.activity_master);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            name = extras.getString(Constants.BUNDLE_PARAM_USER_NAME);
+        }
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         discoveryAgent = DualStackDiscoveryAgent.getInstance();
@@ -208,10 +210,8 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
                     String online = getString(R.string.sphero_connected);
                     Toast.makeText(this, String.format(online, robot.getName()), Toast.LENGTH_SHORT).show();
                     sphero.setZeroHeading();
-                    float r = SpheroColors.decimalToFloat(42);
-                    float g = SpheroColors.decimalToFloat(182);
-                    float b = SpheroColors.decimalToFloat(7);
-                    sphero.setLed(r, g, b);
+                    float[] rgb = SpheroColors.getConnectedColor();
+                    sphero.setLed(rgb[0], rgb[1], rgb[2]);
                 }
                 break;
             case Disconnected:

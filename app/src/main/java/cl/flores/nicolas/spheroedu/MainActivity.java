@@ -71,8 +71,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        Bundle extras = new Bundle();
+        extras.putString(Constants.BUNDLE_PARAM_USER_NAME, name);
+
         Intent master = new Intent(this, MasterActivity.class);
-        master.putExtra(bundle_param, name);
+        master.putExtras(extras);
         startActivity(master);
         finish();
     }
@@ -86,8 +89,11 @@ public class MainActivity extends AppCompatActivity {
             return;
         }
 
+        Bundle extras = new Bundle();
+        extras.putString(Constants.BUNDLE_PARAM_USER_NAME, name);
+
         Intent slave = new Intent(this, SlaveActivity.class);
-        slave.putExtra(bundle_param, name);
+        slave.putExtras(extras);
         startActivity(slave);
         finish();
     }

@@ -36,6 +36,7 @@ public class CommunicationThread extends Thread {
     }
 
     public void run() {
+        // TODO verificar tamaño del buffer, puede ser pequeño para json
         byte[] buffer = new byte[1024];
         int bytes;
 

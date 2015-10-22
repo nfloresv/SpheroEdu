@@ -15,7 +15,7 @@ import cl.flores.nicolas.spheroedu.interfaces.SocketInterface;
 import cl.flores.nicolas.spheroedu.threads.ServerBluetoothThread;
 
 public class SlaveActivity extends AppCompatActivity implements SocketInterface {
-    private final int bluetoothDuration = Constants.BLUETOOTH_DURAION;
+    private final int bluetoothDuration = Constants.BLUETOOTH_DURATION;
     private final int REQUEST_DISCOVERABLE_BT = Constants.REQUEST_DISCOVERABLE_BT;
     private String name;
     private ServerBluetoothThread server;
@@ -23,10 +23,12 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
-        if (savedInstanceState != null) {
-            name = savedInstanceState.getString(Constants.BUNDLE_PARAM_USER_NAME);
-        }
         setContentView(R.layout.activity_slave);
+
+        Bundle extras = getIntent().getExtras();
+        if (extras != null) {
+            name = extras.getString(Constants.BUNDLE_PARAM_USER_NAME);
+        }
 
         Intent discoverableIntent = new Intent(BluetoothAdapter.ACTION_REQUEST_DISCOVERABLE);
         discoverableIntent.putExtra(BluetoothAdapter.EXTRA_DISCOVERABLE_DURATION, bluetoothDuration);
