@@ -25,6 +25,26 @@ public class Constants {
 
     //    JSON Keys
     public static final String JSON_NAME = "NAME";
+    public static final String JSON_CHARGE_VALUE = "CHARGE";
+    public static final String JSON_COLOR_ARRAY = "COLOR";
+    public static final String JSON_POSITION = "POSITION";
     public static final String JSON_MESSAGE = "MESSAGE";
-    public static final String JSON_ROBOT = "ROBOT";
+    public static final String JSON_ROBOT_NAME = "ROBOT";
+
+    //    Exercise JSON Keys
+    public static final String JSON_EXERCISE_INDEPENDENT = "INDEPENDENT";
+    public static final String JSON_EXERCISE_SPHEROS_ARRAY = "SPHEROS";
+    public static final String JSON_EXERCISE_X = "X";
+    public static final String JSON_EXERCISE_Y = "Y";
+    public static final String JSON_EXERCISE_CHARGE = "CHARGE";
+
+    //    Exercise
+    public static final String EXCERCISE_JSON = "{" +
+                "\"INDEPENDENT\": 1," +
+                "\"SPHEROS\": [" +
+                    "{\"X\": 0,\"Y\": 0,\"CHARGE\": 1}," +
+                    "{\"X\": 2,\"Y\": 2,\"CHARGE\": 4}," +
+                    "{\"X\": 4,\"Y\": -4,\"CHARGE\": -4}" +
+                "]" +
+            "}";
 }

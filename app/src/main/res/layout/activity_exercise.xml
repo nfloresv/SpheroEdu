@@ -10,13 +10,40 @@
     tools:context="cl.flores.nicolas.spheroedu.activities.ExerciseActivity">
 
     <TextView
+        android:id="@+id/textView2"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_centerHorizontal="true"
+        android:text="Your Sphero color is"
+        android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <Space
+        android:id="@+id/sphero_color"
+        android:layout_width="fill_parent"
+        android:layout_height="50dp"
+        android:layout_alignParentEnd="true"
+        android:layout_alignParentStart="true"
+        android:layout_below="@+id/textView2"
+        android:layout_centerHorizontal="true" />
+
+    <TextView
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/sphero_color"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:text="Actividad"
-        android:textAppearance="?android:attr/textAppearanceLarge" />
+        android:gravity="center_horizontal"
+        android:text="Is located in (2, 2) and have a charge of"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <NumberPicker
+        android:id="@+id/numberPicker"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
+        android:layout_centerHorizontal="true"
+        android:measureWithLargestChild="false" />
 
     <Button
         android:id="@+id/stabilization_btn"
@@ -27,4 +54,5 @@
         android:layout_alignParentStart="true"
         android:onClick="setStabilization"
         android:text="Calibrar" />
+
 </RelativeLayout>

@@ -6,10 +6,9 @@ package cl.flores.nicolas.spheroedu.Utils;
 public class SpheroColors {
     public static final float backLightOff = 0.0f;
     public static final float backLightOn = 1.0f;
-    private static final float maxValue = 255.0f;
 
     private static float decimalToFloat(int decimal) {
-        return (float) decimal / maxValue;
+        return (float) decimal / 255.0f;
     }
 
     public static float[] getConnectedColor() {
