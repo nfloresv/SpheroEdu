@@ -3,14 +3,12 @@ package cl.flores.nicolas.spheroedu.activities;
 import android.bluetooth.BluetoothSocket;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Looper;
 import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.NumberPicker;
 import android.widget.Space;
-import android.widget.Toast;
 
 import com.orbotix.ConvenienceRobot;
 import com.orbotix.async.DeviceSensorAsyncMessage;
@@ -75,12 +73,6 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
                             locatorData.getPositionY(), locatorData.getVelocityX(),
                             locatorData.getVelocityY());
                     Log.d(Constants.LOG_TAG, format);
-
-//                if (locatorData.getPositionY() >= 10.0f) {
-//                    ConvenienceRobot sphero = new ConvenienceRobot(robot);
-//                    sphero.stop();
-//                    finish();
-//                }
                 }
             }
         };
@@ -116,7 +108,6 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
         np = (NumberPicker) findViewById(R.id.numberPicker);
         np.setMinValue(-10);
         np.setMaxValue(10);
-        np.setValue(0);                 // Necessary??
     }
 
     @Override
@@ -171,13 +162,14 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
                 float[] rgb = wrapper.getColor();
                 robot.setLed(rgb[0], rgb[1], rgb[2]);
             }
+            position = communicationThreads.size();
 
+            // Communication
             for (CommunicationThread thread : communicationThreads) {
                 int index = communicationThreads.indexOf(thread);
                 RobotWrapper wrapper1 = manager.getWrapper(index);
 
                 float[] rgb = wrapper1.getColor();
-                double charge = wrapper1.getCharge();
 
                 JSONObject message = new JSONObject();
                 JSONArray color = new JSONArray();
@@ -186,7 +178,6 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
                     message.put(Constants.JSON_NAME, name);
                     message.put(Constants.JSON_MESSAGE, "Sphero color and position");
                     message.put(Constants.JSON_POSITION, index);
-                    message.put(Constants.JSON_CHARGE_VALUE, charge);
 
                     // Array
                     color.put(rgb[0]);
@@ -198,19 +189,6 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
                 }
                 thread.write(message.toString());
             }
-            // TODO set color and charge
-            position = communicationThreads.size();
-        /*} else {
-            for (CommunicationThread thread : communicationThreads) {
-                JSONObject message = new JSONObject();
-                try {
-                        message.put(Constants.JSON_NAME, name);
-                    message.put(Constants.JSON_MESSAGE, "Hola Master");
-                } catch (JSONException e) {
-                    Log.e(Constants.LOG_TAG, "Error writing JSON", e);
-                }
-                thread.write(message.toString());
-            }*/
         }
 
         // TODO Cambiar listener al exterior
@@ -223,6 +201,7 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
                         message.put(Constants.JSON_NAME, name);
                         message.put(Constants.JSON_MESSAGE, "Charge value change");
                         message.put(Constants.JSON_CHARGE_VALUE, newVal);
+                        message.put(Constants.JSON_POSITION, position);
                     } catch (JSONException e) {
                         Log.e(Constants.LOG_TAG, "Error writing JSON", e);
                     }
@@ -234,34 +213,36 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
 
     @Override
     public void getMessage(String message) {
-        String decoded = "";
         try {
             JSONObject jsonObject = new JSONObject(message);
 
-            // User name and message
-            if (jsonObject.has(Constants.JSON_NAME)) {
-                decoded = jsonObject.getString(Constants.JSON_NAME) + ": ";
-                decoded += jsonObject.getString(Constants.JSON_MESSAGE);
-            }
-
-            // Sphero details
+            // Sphero color and position
             if (jsonObject.has(Constants.JSON_COLOR_ARRAY)) {
+                position = jsonObject.getInt(Constants.JSON_POSITION);
+
                 JSONArray color = jsonObject.getJSONArray(Constants.JSON_COLOR_ARRAY);
                 int red = (int) (color.getDouble(0) * 255);
                 int green = (int) (color.getDouble(1) * 255);
                 int blue = (int) (color.getDouble(2) * 255);
 
-                Space spheroColor = (Space) findViewById(R.id.sphero_color);
+                Space spheroColor = (Space) findViewById(R.id.spheroColor);
                 spheroColor.setBackgroundColor(Color.rgb(red, green, blue));
+            }
+
+            // Sphero stabilized
+            if (jsonObject.has(Constants.JSON_STABILIZATION)) {
+                int charge = jsonObject.getInt(Constants.JSON_STABILIZATION);
+                np.setValue(charge);
+
+                np.setVisibility(View.VISIBLE);
+                Button button = (Button) findViewById(R.id.stabilization_btn);
+                button.setVisibility(View.GONE);
             }
             // TODO readjust the sphero continously
             // TODO if sphero is in square position finish
         } catch (JSONException e) {
             Log.e(Constants.LOG_TAG, "Error parsing JSON", e);
         }
-        Looper.prepare();
-        Toast.makeText(this, decoded, Toast.LENGTH_SHORT).show();
-        Looper.loop();
     }
 
     public void setStabilization(View v) {
@@ -273,17 +254,27 @@ public class ExerciseActivity extends AppCompatActivity implements MessageInterf
             robot.setBackLedBrightness(SpheroColors.backLightOff);
 
             robot.enableLocator(true);
-//            robot.drive(0.0f, .15f);
         }
         for (CommunicationThread thread : communicationThreads) {
+            int index = communicationThreads.indexOf(thread);
+            RobotWrapper wrapper = manager.getWrapper(index);
+
+            double charge = wrapper.getCharge();
             JSONObject message = new JSONObject();
+
             try {
                 message.put(Constants.JSON_NAME, name);
-                message.put(Constants.JSON_MESSAGE, "Spheros calibrados");
+                message.put(Constants.JSON_MESSAGE, "Spheros stabilized");
+                message.put(Constants.JSON_STABILIZATION, true);
+                message.put(Constants.JSON_CHARGE_VALUE, charge);
             } catch (JSONException e) {
                 Log.e(Constants.LOG_TAG, "Error writing JSON", e);
             }
             thread.write(message.toString());
         }
+
+        np.setVisibility(View.VISIBLE);
+        Button button = (Button) findViewById(R.id.stabilization_btn);
+        button.setVisibility(View.GONE);
     }
 }

@@ -19,7 +19,7 @@
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <Space
-        android:id="@+id/sphero_color"
+        android:id="@+id/spheroColor"
         android:layout_width="fill_parent"
         android:layout_height="50dp"
         android:layout_alignParentEnd="true"
@@ -31,7 +31,7 @@
         android:id="@+id/textView"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/sphero_color"
+        android:layout_below="@+id/spheroColor"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
         android:text="Is located in (2, 2) and have a charge of"
@@ -41,9 +41,10 @@
         android:id="@+id/numberPicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:layout_below="@+id/textView"
+        android:measureWithLargestChild="false"
+        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
-        android:measureWithLargestChild="false" />
+        android:visibility="gone" />
 
     <Button
         android:id="@+id/stabilization_btn"

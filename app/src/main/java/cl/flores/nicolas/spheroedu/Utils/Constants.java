@@ -29,7 +29,7 @@ public class Constants {
     public static final String JSON_COLOR_ARRAY = "COLOR";
     public static final String JSON_POSITION = "POSITION";
     public static final String JSON_MESSAGE = "MESSAGE";
-    public static final String JSON_ROBOT_NAME = "ROBOT";
+    public static final String JSON_STABILIZATION = "STABILIZATION";
 
     //    Exercise JSON Keys
     public static final String JSON_EXERCISE_INDEPENDENT = "INDEPENDENT";
