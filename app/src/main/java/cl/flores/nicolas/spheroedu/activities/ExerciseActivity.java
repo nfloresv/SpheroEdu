@@ -80,6 +80,12 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                             locatorData.getVelocityY());
                     Log.d(Constants.LOG_TAG, format);
 
+                    // TODO verificar robot por nombre
+                    for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
+                        wrapper.setX(locatorData.getPositionX());
+                        wrapper.setY(locatorData.getPositionY());
+                    }
+
                     if (locatorData.getPositionY() >= 100 && !loop) {
                         ConvenienceRobot sphero = new ConvenienceRobot(robot);
                         sphero.stop();
@@ -233,22 +239,21 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
         try {
             JSONObject jsonObject = new JSONObject(message);
 
-            // Sphero color and position
-            if (jsonObject.has(Constants.JSON_COLOR)) {
+            if (jsonObject.has(Constants.JSON_COLOR)) { // Sphero color and position
                 position = jsonObject.getInt(Constants.JSON_POSITION);
 
                 String color = jsonObject.getString(Constants.JSON_COLOR);
                 int rgb = Color.parseColor(color);
-
                 spheroColor.setBackgroundColor(rgb);
-            }
-
-            // Sphero stabilized
-            if (jsonObject.has(Constants.JSON_STABILIZATION)) {
+            } else if (jsonObject.has(Constants.JSON_STABILIZATION)) { // Sphero stabilized
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
                 np.setValue(charge);
-
                 np.setVisibility(View.VISIBLE);
+            } else if (jsonObject.has(Constants.JSON_CHARGE_VALUE)) {
+                int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
+                int pos = jsonObject.getInt(Constants.JSON_POSITION);
+                RobotWrapper wrapper = manager.getWrapper(pos);
+                wrapper.setCharge(charge);
             }
             // TODO readjust the sphero continously
             // TODO if sphero is in square position finish
@@ -294,18 +299,23 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        /*for (CommunicationThread thread : communicationThreads) {
-            JSONObject message = new JSONObject();
-            try {
-                message.put(Constants.JSON_NAME, name);
-                message.put(Constants.JSON_MESSAGE, "Charge value change");
-                message.put(Constants.JSON_CHARGE_VALUE, newVal);
-                message.put(Constants.JSON_POSITION, position);
-            } catch (JSONException e) {
-                Log.e(Constants.LOG_TAG, "Error writing JSON", e);
+        if (master) {
+            RobotWrapper wrapper = manager.getWrapper(position);
+            wrapper.setCharge(newVal);
+        } else {
+            for (CommunicationThread thread : communicationThreads) {
+                JSONObject message = new JSONObject();
+                try {
+                    message.put(Constants.JSON_NAME, name);
+                    message.put(Constants.JSON_MESSAGE, "Charge value change");
+                    message.put(Constants.JSON_CHARGE_VALUE, newVal);
+                    message.put(Constants.JSON_POSITION, position);
+                } catch (JSONException e) {
+                    Log.e(Constants.LOG_TAG, "Error writing JSON", e);
+                }
+                thread.write(message.toString());
             }
-            thread.write(message.toString());
-        }*/
+        }
         Log.d(Constants.LOG_TAG, "New Value: " + String.valueOf(newVal));
     }
 }

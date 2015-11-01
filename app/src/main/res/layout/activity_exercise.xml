@@ -41,9 +41,9 @@
         android:id="@+id/numberPicker"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
-        android:measureWithLargestChild="false"
-        android:layout_centerVertical="true"
         android:layout_centerHorizontal="true"
+        android:layout_centerVertical="true"
+        android:measureWithLargestChild="false"
         android:visibility="gone" />
 
     <Button

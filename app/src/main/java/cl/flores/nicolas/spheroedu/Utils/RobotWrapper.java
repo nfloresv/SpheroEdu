@@ -5,11 +5,11 @@ import com.orbotix.ConvenienceRobot;
 public class RobotWrapper {
     private final ConvenienceRobot robot;
     private final String color;
-    private int x;
-    private int y;
-    private double charge;
+    private float x;
+    private float y;
+    private int charge;
 
-    public RobotWrapper(ConvenienceRobot robot, String color, int x, int y, double charge) {
+    public RobotWrapper(ConvenienceRobot robot, String color, float x, float y, int charge) {
         this.robot = robot;
         this.x = x;
         this.y = y;
@@ -25,19 +25,19 @@ public class RobotWrapper {
         return color;
     }
 
-    public int getX() {
+    public float getX() {
         return x;
     }
 
-    public void setX(int x) {
+    public void setX(float x) {
         this.x = x;
     }
 
-    public int getY() {
+    public float getY() {
         return y;
     }
 
-    public void setY(int y) {
+    public void setY(float y) {
         this.y = y;
     }
 
@@ -45,7 +45,7 @@ public class RobotWrapper {
         return charge;
     }
 
-    public void setCharge(double charge) {
+    public void setCharge(int charge) {
         this.charge = charge;
     }
 }

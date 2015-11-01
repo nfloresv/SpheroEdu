@@ -29,9 +29,9 @@ public class RobotManager {
                 if (i < robots.size()) {
                     robot = robots.get(i);
                 }
-                int x = sphero.getInt(Constants.JSON_EXERCISE_X);
-                int y = sphero.getInt(Constants.JSON_EXERCISE_Y);
-                double charge = sphero.getDouble(Constants.JSON_EXERCISE_CHARGE);
+                float x = (float) sphero.getDouble(Constants.JSON_EXERCISE_X);
+                float y = (float) sphero.getDouble(Constants.JSON_EXERCISE_Y);
+                int charge = sphero.getInt(Constants.JSON_EXERCISE_CHARGE);
                 String color = SpheroColors.getColorByIndex(i);
 
                 RobotWrapper wrapper = new RobotWrapper(robot, color, x, y, charge);
