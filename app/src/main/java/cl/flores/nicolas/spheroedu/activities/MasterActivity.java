@@ -10,6 +10,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Looper;
 import android.util.Log;
@@ -210,8 +211,8 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
                     String online = getString(R.string.sphero_connected);
                     Toast.makeText(this, String.format(online, robot.getName()), Toast.LENGTH_SHORT).show();
                     sphero.setZeroHeading();
-                    float[] rgb = SpheroColors.getConnectedColor();
-                    sphero.setLed(rgb[0], rgb[1], rgb[2]);
+                    int rgb = Color.parseColor(SpheroColors.connectedColor);
+                    sphero.setLed(Color.red(rgb)/255f, Color.green(rgb)/255f, Color.blue(rgb)/255f);
                 }
                 break;
             case Disconnected:

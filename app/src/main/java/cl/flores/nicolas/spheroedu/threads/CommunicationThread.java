@@ -1,6 +1,7 @@
 package cl.flores.nicolas.spheroedu.threads;
 
 import android.bluetooth.BluetoothSocket;
+import android.os.Handler;
 import android.util.Log;
 
 import com.google.common.base.Charsets;
@@ -10,17 +11,16 @@ import java.io.InputStream;
 import java.io.OutputStream;
 
 import cl.flores.nicolas.spheroedu.Utils.Constants;
-import cl.flores.nicolas.spheroedu.interfaces.MessageInterface;
 
 public class CommunicationThread extends Thread {
     private final BluetoothSocket socket;
     private final InputStream inStream;
     private final OutputStream outStream;
-    private final MessageInterface messageInterface;
+    private final Handler mHandler;
 
-    public CommunicationThread(BluetoothSocket socket, MessageInterface messageInterface) {
+    public CommunicationThread(BluetoothSocket socket, Handler mHandler) {
         this.socket = socket;
-        this.messageInterface = messageInterface;
+        this.mHandler = mHandler;
         InputStream tmpIn = null;
         OutputStream tmpOut = null;
 
@@ -44,7 +44,7 @@ public class CommunicationThread extends Thread {
             try {
                 bytes = inStream.read(buffer);
                 String message = new String(buffer, 0, bytes, Charsets.UTF_8);
-                messageInterface.getMessage(message);
+                mHandler.obtainMessage(Constants.MESSAGE_SEND, message).sendToTarget();
             } catch (IOException e) {
                 Log.e(Constants.LOG_TAG, "Error reading stream", e);
                 break;

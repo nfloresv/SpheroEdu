@@ -4,12 +4,12 @@ import com.orbotix.ConvenienceRobot;
 
 public class RobotWrapper {
     private final ConvenienceRobot robot;
+    private final String color;
     private int x;
     private int y;
     private double charge;
-    private float[] color;
 
-    public RobotWrapper(ConvenienceRobot robot, float[] color, int x, int y, double charge) {
+    public RobotWrapper(ConvenienceRobot robot, String color, int x, int y, double charge) {
         this.robot = robot;
         this.x = x;
         this.y = y;
@@ -19,6 +19,10 @@ public class RobotWrapper {
 
     public ConvenienceRobot getRobot() {
         return robot;
+    }
+
+    public String getColor() {
+        return color;
     }
 
     public int getX() {
@@ -43,9 +47,5 @@ public class RobotWrapper {
 
     public void setCharge(double charge) {
         this.charge = charge;
-    }
-
-    public float[] getColor() {
-        return color;
     }
 }

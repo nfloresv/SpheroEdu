@@ -26,10 +26,13 @@ public class Constants {
     //    JSON Keys
     public static final String JSON_NAME = "NAME";
     public static final String JSON_CHARGE_VALUE = "CHARGE";
-    public static final String JSON_COLOR_ARRAY = "COLOR";
+    public static final String JSON_COLOR = "COLOR";
     public static final String JSON_POSITION = "POSITION";
     public static final String JSON_MESSAGE = "MESSAGE";
     public static final String JSON_STABILIZATION = "STABILIZATION";
+
+//    Handler state
+    public static final int MESSAGE_SEND = 0x0201;
 
     //    Exercise JSON Keys
     public static final String JSON_EXERCISE_INDEPENDENT = "INDEPENDENT";
