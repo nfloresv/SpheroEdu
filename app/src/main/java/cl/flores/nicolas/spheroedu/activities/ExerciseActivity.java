@@ -30,9 +30,9 @@ import java.util.ArrayList;
 import cl.flores.nicolas.spheroedu.R;
 import cl.flores.nicolas.spheroedu.Utils.CommunicationManager;
 import cl.flores.nicolas.spheroedu.Utils.Constants;
-import cl.flores.nicolas.spheroedu.Utils.RobotManager;
-import cl.flores.nicolas.spheroedu.Utils.RobotWrapper;
 import cl.flores.nicolas.spheroedu.Utils.SpheroColors;
+import cl.flores.nicolas.spheroedu.Wrappers.RobotManager;
+import cl.flores.nicolas.spheroedu.Wrappers.RobotWrapper;
 import cl.flores.nicolas.spheroedu.threads.CommunicationThread;
 
 public class ExerciseActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
@@ -71,14 +71,6 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                     ArrayList<DeviceSensorsData> sensorDataArray = sensorsData.getAsyncData();
                     DeviceSensorsData dsd = sensorDataArray.get(sensorDataArray.size() - 1);
                     LocatorData locatorData = dsd.getLocatorData();
-
-                    String location = "Sphero '%1$s' " +
-                            "posición (x=%2$.2f, y=%3$.2f) - " +
-                            "Velocidad (x=%4$.2f, y=%5$.2f)";
-                    String format = String.format(location, robot.getName(), locatorData.getPositionX(),
-                            locatorData.getPositionY(), locatorData.getVelocityX(),
-                            locatorData.getVelocityY());
-                    Log.d(Constants.LOG_TAG, format);
 
                     // TODO verificar robot por nombre
                     for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
@@ -316,6 +308,5 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 thread.write(message.toString());
             }
         }
-        Log.d(Constants.LOG_TAG, "New Value: " + String.valueOf(newVal));
     }
 }

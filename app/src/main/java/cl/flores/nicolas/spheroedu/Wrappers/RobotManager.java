@@ -1,4 +1,4 @@
-package cl.flores.nicolas.spheroedu.Utils;
+package cl.flores.nicolas.spheroedu.Wrappers;
 
 import android.util.Log;
 
@@ -10,6 +10,9 @@ import org.json.JSONObject;
 
 import java.util.ArrayList;
 import java.util.List;
+
+import cl.flores.nicolas.spheroedu.Utils.Constants;
+import cl.flores.nicolas.spheroedu.Utils.SpheroColors;
 
 public class RobotManager {
     private int independent;
