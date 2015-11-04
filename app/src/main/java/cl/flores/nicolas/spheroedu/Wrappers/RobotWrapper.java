@@ -12,7 +12,7 @@ public class RobotWrapper {
 
     public RobotWrapper(ConvenienceRobot robot, String color, float x, float y, int charge) {
         this.robot = robot;
-        this.pos=new Vector(x,y);
+        this.pos = new Vector(x, y);
         this.charge = charge;
         this.color = color;
     }
@@ -25,23 +25,15 @@ public class RobotWrapper {
         return color;
     }
 
-    public float getX() {
-        return pos.getX();
+    public Vector getPos() {
+        return pos;
     }
 
-    public void setX(float x) {
-        pos.setX(x);
+    public void setPos(float x, float y) {
+        this.pos = new Vector(x, y);
     }
 
-    public float getY() {
-        return pos.getY();
-    }
-
-    public void setY(float y) {
-        pos.setY(y);
-    }
-
-    public double getCharge() {
+    public int getCharge() {
         return charge;
     }
 

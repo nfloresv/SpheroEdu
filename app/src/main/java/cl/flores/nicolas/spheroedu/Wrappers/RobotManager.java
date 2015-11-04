@@ -52,6 +52,11 @@ public class RobotManager {
         return new ArrayList<>(sublist);
     }
 
+    public ArrayList<RobotWrapper> getDependentWrapper() {
+        List<RobotWrapper> sublist = robots.subList(independent + 1, robots.size());
+        return new ArrayList<>(sublist);
+    }
+
     // Dependent Data
     public RobotWrapper getWrapper(int index) {
         return robots.get(independent + index);

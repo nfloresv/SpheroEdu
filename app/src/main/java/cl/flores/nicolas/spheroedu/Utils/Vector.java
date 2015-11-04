@@ -39,6 +39,11 @@ public class Vector {
         return Math.toDegrees(angle);
     }
 
+    public Vector normalize() {
+        double lambda = 1 / this.module();
+        return this.pond((float) lambda);
+    }
+
     public float getX() {
         return x;
     }

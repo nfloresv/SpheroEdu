@@ -31,6 +31,7 @@ import cl.flores.nicolas.spheroedu.R;
 import cl.flores.nicolas.spheroedu.Utils.CommunicationManager;
 import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.Utils.SpheroColors;
+import cl.flores.nicolas.spheroedu.Utils.Vector;
 import cl.flores.nicolas.spheroedu.Wrappers.RobotManager;
 import cl.flores.nicolas.spheroedu.Wrappers.RobotWrapper;
 import cl.flores.nicolas.spheroedu.threads.CommunicationThread;
@@ -46,7 +47,6 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
     private boolean master;
     private NumberPicker np;
     private int position;
-    private boolean loop = false;
     private TextView spheroColor;
 
     public ExerciseActivity() {
@@ -72,23 +72,20 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                     DeviceSensorsData dsd = sensorDataArray.get(sensorDataArray.size() - 1);
                     LocatorData locatorData = dsd.getLocatorData();
 
-                    // TODO verificar robot por nombre
                     for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
-                        wrapper.setX(locatorData.getPositionX());
-                        wrapper.setY(locatorData.getPositionY());
+                        Robot sphero = wrapper.getRobot().getRobot();
+                        String spheroName = sphero.getName();
+                        String robotName = robot.getName();
+                        if (spheroName.equals(robotName)) {
+                            wrapper.setPos(locatorData.getPositionX(), locatorData.getPositionY());
+                            getTotalForce();
+                            break;
+                        }
                     }
 
-                    if (locatorData.getPositionY() >= 100 && !loop) {
+                    if (Math.sqrt(Math.pow(locatorData.getPositionY(), 2) + Math.pow(locatorData.getPositionX(), 2)) >= 100) {
                         ConvenienceRobot sphero = new ConvenienceRobot(robot);
                         sphero.stop();
-                        sphero.drive(180f, .5f);
-                        loop = true;
-                    }
-
-                    if (locatorData.getPositionY() <= 0 && loop) {
-                        ConvenienceRobot sphero = new ConvenienceRobot(robot);
-                        sphero.stop();
-                        finish();
                     }
                 }
             }
@@ -246,9 +243,9 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 int pos = jsonObject.getInt(Constants.JSON_POSITION);
                 RobotWrapper wrapper = manager.getWrapper(pos);
                 wrapper.setCharge(charge);
+                getTotalForce();
+                // TODO if sphero is in square position finish
             }
-            // TODO readjust the sphero continously
-            // TODO if sphero is in square position finish
         } catch (JSONException e) {
             Log.e(Constants.LOG_TAG, "Error parsing JSON", e);
         }
@@ -263,8 +260,6 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
             robot.setBackLedBrightness(SpheroColors.backLightOff);
 
             robot.enableLocator(true);
-
-            robot.drive(0f, .2f);
         }
         for (CommunicationThread thread : communicationThreads) {
             int index = communicationThreads.indexOf(thread);
@@ -287,6 +282,8 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
         np.setVisibility(View.VISIBLE);
         Button button = (Button) findViewById(R.id.stabilization_btn);
         button.setVisibility(View.GONE);
+
+        getTotalForce();
     }
 
     @Override
@@ -294,6 +291,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
         if (master) {
             RobotWrapper wrapper = manager.getWrapper(position);
             wrapper.setCharge(newVal);
+            getTotalForce();
         } else {
             for (CommunicationThread thread : communicationThreads) {
                 JSONObject message = new JSONObject();
@@ -308,5 +306,29 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 thread.write(message.toString());
             }
         }
+    }
+
+    private void getTotalForce() {
+        // TODO verificar si es necesario sincronizacion
+        for (RobotWrapper q1 : manager.getIndependentWrapper()) {
+            Vector axis = new Vector(0, 1);
+            Vector force = new Vector(0, 0);
+            for (RobotWrapper q2 : manager.getDependentWrapper()) {
+                Vector subForce = getForce(q1, q2);
+                force = force.add(subForce);
+            }
+            double angle = force.angle(axis);
+            // TODO calcule velocity
+            ConvenienceRobot robot = q1.getRobot();
+            robot.drive((float) angle, .2f);
+        }
+    }
+
+    private Vector getForce(RobotWrapper q1, RobotWrapper q2) {
+        // TODO add constant k
+        Vector r21 = q1.getPos().substract(q2.getPos());
+        double charge = (q1.getCharge() * q2.getCharge()) / r21.module();
+        Vector dir = r21.normalize();
+        return dir.pond((float) charge);
     }
 }
