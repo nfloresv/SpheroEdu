@@ -30,7 +30,8 @@ public class RobotWrapper {
     }
 
     public void setPos(float x, float y) {
-        this.pos = new Vector(x, y);
+        this.pos.setX(x);
+        this.pos.setY(y);
     }
 
     public int getCharge() {

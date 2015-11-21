@@ -15,7 +15,7 @@ public class Vector {
         return new Vector(x, y);
     }
 
-    public Vector substract(Vector other) {
+    public Vector subtract(Vector other) {
         Vector negOther = other.pond(-1f);
         return this.add(negOther);
     }
@@ -44,19 +44,16 @@ public class Vector {
         return this.pond((float) lambda);
     }
 
-    public float getX() {
-        return x;
-    }
-
     public void setX(float x) {
         this.x = x;
     }
 
-    public float getY() {
-        return y;
-    }
-
     public void setY(float y) {
         this.y = y;
+    }
+
+    @Override
+    public String toString() {
+        return "Vector (" + x + ", " + y + ')';
     }
 }

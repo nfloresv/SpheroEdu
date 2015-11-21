@@ -37,12 +37,11 @@ import cl.flores.nicolas.spheroedu.Wrappers.RobotWrapper;
 import cl.flores.nicolas.spheroedu.threads.CommunicationThread;
 
 public class ExerciseActivity extends AppCompatActivity implements NumberPicker.OnValueChangeListener {
-    private final String[] values = {"-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3",
+    private final String[] charges = {"-10", "-9", "-8", "-7", "-6", "-5", "-4", "-3",
             "-2", "-1", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9", "10"};
     private final ArrayList<CommunicationThread> communicationThreads;
     private final RobotManager manager;
     private final ResponseListener responseListener;
-    private final Handler mHandler;
     private String name;
     private boolean master;
     private NumberPicker np;
@@ -72,16 +71,18 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                     DeviceSensorsData dsd = sensorDataArray.get(sensorDataArray.size() - 1);
                     LocatorData locatorData = dsd.getLocatorData();
 
-                    for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
-                        Robot sphero = wrapper.getRobot().getRobot();
-                        String spheroName = sphero.getName();
-                        String robotName = robot.getName();
-                        if (spheroName.equals(robotName)) {
-                            wrapper.setPos(locatorData.getPositionX(), locatorData.getPositionY());
-                            getTotalForce();
-                            break;
+                    synchronized (manager) {
+                        for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
+                            Robot sphero = wrapper.getRobot().getRobot();
+                            String spheroName = sphero.getName();
+                            String robotName = robot.getName();
+                            if (spheroName.equals(robotName)) {
+                                wrapper.setPos(locatorData.getPositionX(), locatorData.getPositionY());
+                                break;
+                            }
                         }
                     }
+                    getTotalForce();
 
                     if (Math.sqrt(Math.pow(locatorData.getPositionY(), 2) + Math.pow(locatorData.getPositionX(), 2)) >= 100) {
                         ConvenienceRobot sphero = new ConvenienceRobot(robot);
@@ -90,7 +91,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 }
             }
         };
-        mHandler = new Handler(Looper.getMainLooper()) {
+        final Handler mHandler = new Handler(Looper.getMainLooper()) {
             @Override
             public void handleMessage(Message msg) {
                 if (msg.what == Constants.MESSAGE_SEND) {
@@ -132,7 +133,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
         np = (NumberPicker) findViewById(R.id.numberPicker);
         np.setMinValue(0);
         np.setMaxValue(20);
-        np.setDisplayedValues(values);
+        np.setDisplayedValues(charges);
         np.setWrapSelectorWheel(false);
         np.setOnValueChangedListener(this);
 
@@ -236,13 +237,17 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 spheroColor.setBackgroundColor(rgb);
             } else if (jsonObject.has(Constants.JSON_STABILIZATION)) { // Sphero stabilized
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
+
                 np.setValue(charge);
                 np.setVisibility(View.VISIBLE);
             } else if (jsonObject.has(Constants.JSON_CHARGE_VALUE)) {
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
                 int pos = jsonObject.getInt(Constants.JSON_POSITION);
-                RobotWrapper wrapper = manager.getWrapper(pos);
-                wrapper.setCharge(charge);
+
+                synchronized (manager) {
+                    RobotWrapper wrapper = manager.getWrapper(pos);
+                    wrapper.setCharge(Integer.parseInt(charges[charge]));
+                }
                 getTotalForce();
                 // TODO if sphero is in square position finish
             }
@@ -265,7 +270,13 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
             int index = communicationThreads.indexOf(thread);
             RobotWrapper wrapper = manager.getWrapper(index);
 
-            double charge = wrapper.getCharge();
+            int charge = wrapper.getCharge();
+            for (int i = 0; i < charges.length; i++) {
+                if (Integer.valueOf(charges[i]) == wrapper.getCharge()) {
+                    charge = i;
+                    break;
+                }
+            }
             JSONObject message = new JSONObject();
 
             try {
@@ -279,6 +290,14 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
             thread.write(message.toString());
         }
 
+        RobotWrapper wrapper = manager.getWrapper(position);
+        for (int i = 0; i < charges.length; i++) {
+            String charge = charges[i];
+            if (Integer.valueOf(charge) == wrapper.getCharge()) {
+                np.setValue(i);
+                break;
+            }
+        }
         np.setVisibility(View.VISIBLE);
         Button button = (Button) findViewById(R.id.stabilization_btn);
         button.setVisibility(View.GONE);
@@ -289,8 +308,10 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
         if (master) {
-            RobotWrapper wrapper = manager.getWrapper(position);
-            wrapper.setCharge(newVal);
+            synchronized (manager) {
+                RobotWrapper wrapper = manager.getWrapper(position);
+                wrapper.setCharge(Integer.parseInt(charges[newVal]));
+            }
             getTotalForce();
         } else {
             for (CommunicationThread thread : communicationThreads) {
@@ -309,26 +330,33 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
     }
 
     private void getTotalForce() {
-        // TODO verificar si es necesario sincronizacion
-        for (RobotWrapper q1 : manager.getIndependentWrapper()) {
-            Vector axis = new Vector(0, 1);
-            Vector force = new Vector(0, 0);
-            for (RobotWrapper q2 : manager.getDependentWrapper()) {
-                Vector subForce = getForce(q1, q2);
-                force = force.add(subForce);
+        final Vector axis = new Vector(0, 1);
+        final float max = (float) (Float.MAX_VALUE * Math.sqrt(2));
+
+        synchronized (manager) {
+            for (RobotWrapper q1 : manager.getIndependentWrapper()) {
+                Vector force = new Vector(0, 0);
+                for (RobotWrapper q2 : manager.getDependentWrapper()) {
+                    Vector subForce = getForce(q1, q2);
+                    force = force.add(subForce);
+                }
+
+                double angle = force.angle(axis);
+                float vel = (float) (force.module() / max);
+                Log.d(Constants.LOG_TAG, "Angle: " + angle);
+                Log.d(Constants.LOG_TAG, "Velocity: " + vel);
+
+                ConvenienceRobot robot = q1.getRobot();
+                robot.drive((float) angle, vel);
             }
-            double angle = force.angle(axis);
-            // TODO calcule velocity
-            ConvenienceRobot robot = q1.getRobot();
-            robot.drive((float) angle, .2f);
         }
     }
 
     private Vector getForce(RobotWrapper q1, RobotWrapper q2) {
-        // TODO add constant k
-        Vector r21 = q1.getPos().substract(q2.getPos());
-        double charge = (q1.getCharge() * q2.getCharge()) / r21.module();
+        final float k = 8.99e9f;
+        Vector r21 = q1.getPos().subtract(q2.getPos());
+        float charge = (k * q1.getCharge() * q2.getCharge()) / (float) r21.module();
         Vector dir = r21.normalize();
-        return dir.pond((float) charge);
+        return dir.pond(charge);
     }
 }
