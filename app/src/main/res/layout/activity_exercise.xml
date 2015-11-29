@@ -15,7 +15,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_centerHorizontal="true"
-        android:text="Your Sphero color is"
+        android:text="@string/sphero_color"
         android:textAppearance="?android:attr/textAppearanceLarge" />
 
     <TextView
@@ -28,13 +28,13 @@
         android:layout_centerHorizontal="true" />
 
     <TextView
-        android:id="@+id/textView"
+        android:id="@+id/locationTV"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/spheroColor"
         android:layout_centerHorizontal="true"
         android:gravity="center_horizontal"
-        android:text="Is located in (2, 2) and have a charge of"
+        android:text="@string/sphero_position"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
     <NumberPicker

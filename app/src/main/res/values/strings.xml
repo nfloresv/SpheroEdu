@@ -29,4 +29,8 @@
     <string name="connected_devises">Conectado con %1$d de %2$d dispositivos</string>
     <string name="sphero_connected">Conectado con Sphero %1$s</string>
     <string name="sphero_offline">Sphero %1$s desconectado</string>
+
+    <!--Excersice Activity-->
+    <string name="sphero_color">El color de tu Sphero es</string>
+    <string name="sphero_position">Se encuentra en (%1$.1f, %2$.1f) y tiene una carga de</string>
 </resources>

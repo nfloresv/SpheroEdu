@@ -208,6 +208,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
             for (CommunicationThread thread : communicationThreads) {
                 int index = communicationThreads.indexOf(thread);
                 RobotWrapper wrapper1 = manager.getWrapper(index);
+                Vector position = wrapper1.getPos();
 
                 String rgb = wrapper1.getColor();
 
@@ -215,8 +216,10 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 try {
                     message.put(Constants.JSON_NAME, name);
                     message.put(Constants.JSON_MESSAGE, "Sphero color and position");
-                    message.put(Constants.JSON_POSITION, index);
+                    message.put(Constants.JSON_SPHERO_NUMBER, index);
                     message.put(Constants.JSON_COLOR, rgb);
+                    message.put(Constants.JSON_POSITION_X, position.getX());
+                    message.put(Constants.JSON_POSITION_Y, position.getY());
                 } catch (JSONException e) {
                     Log.e(Constants.LOG_TAG, "Error writing JSON", e);
                 }
@@ -230,11 +233,18 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
             JSONObject jsonObject = new JSONObject(message);
 
             if (jsonObject.has(Constants.JSON_COLOR)) { // Sphero color and position
-                position = jsonObject.getInt(Constants.JSON_POSITION);
+                position = jsonObject.getInt(Constants.JSON_SPHERO_NUMBER);
 
                 String color = jsonObject.getString(Constants.JSON_COLOR);
                 int rgb = Color.parseColor(color);
                 spheroColor.setBackgroundColor(rgb);
+
+                String sphero_position = getString(R.string.sphero_position);
+                double positionX = jsonObject.getDouble(Constants.JSON_POSITION_X);
+                double positionY = jsonObject.getDouble(Constants.JSON_POSITION_Y);
+                sphero_position = String.format(sphero_position, positionX, positionY);
+                TextView locationTv = (TextView) findViewById(R.id.locationTV);
+                locationTv.setText(sphero_position);
             } else if (jsonObject.has(Constants.JSON_STABILIZATION)) { // Sphero stabilized
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
 
@@ -242,7 +252,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 np.setVisibility(View.VISIBLE);
             } else if (jsonObject.has(Constants.JSON_CHARGE_VALUE)) {
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
-                int pos = jsonObject.getInt(Constants.JSON_POSITION);
+                int pos = jsonObject.getInt(Constants.JSON_SPHERO_NUMBER);
 
                 synchronized (manager) {
                     RobotWrapper wrapper = manager.getWrapper(pos);
@@ -320,7 +330,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                     message.put(Constants.JSON_NAME, name);
                     message.put(Constants.JSON_MESSAGE, "Charge value change");
                     message.put(Constants.JSON_CHARGE_VALUE, newVal);
-                    message.put(Constants.JSON_POSITION, position);
+                    message.put(Constants.JSON_SPHERO_NUMBER, position);
                 } catch (JSONException e) {
                     Log.e(Constants.LOG_TAG, "Error writing JSON", e);
                 }
@@ -342,9 +352,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 }
 
                 double angle = force.angle(axis);
-                float vel = (float) (force.module() / max);
-                Log.d(Constants.LOG_TAG, "Angle: " + angle);
-                Log.d(Constants.LOG_TAG, "Velocity: " + vel);
+                float vel = (float) force.module();//(force.module() / max);
 
                 ConvenienceRobot robot = q1.getRobot();
                 robot.drive((float) angle, vel);

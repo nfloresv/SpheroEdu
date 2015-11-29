@@ -27,11 +27,13 @@ public class Constants {
     public static final String JSON_NAME = "NAME";
     public static final String JSON_CHARGE_VALUE = "CHARGE";
     public static final String JSON_COLOR = "COLOR";
-    public static final String JSON_POSITION = "POSITION";
+    public static final String JSON_SPHERO_NUMBER = "SPHERO_NUMBER";
     public static final String JSON_MESSAGE = "MESSAGE";
     public static final String JSON_STABILIZATION = "STABILIZATION";
+    public static final String JSON_POSITION_X = "POSITION_X";
+    public static final String JSON_POSITION_Y = "POSITION_Y";
 
-//    Handler state
+    //    Handler state
     public static final int MESSAGE_SEND = 0x0201;
 
     //    Exercise JSON Keys
@@ -42,7 +44,8 @@ public class Constants {
     public static final String JSON_EXERCISE_CHARGE = "CHARGE";
 
     //    Exercise
-    public static final String EXCERCISE_JSON = "{" +
+    public static final String EXCERCISE_JSON =
+            "{" +
                 "\"INDEPENDENT\": 1," +
                 "\"SPHEROS\": [" +
                     "{\"X\": 0,\"Y\": 0,\"CHARGE\": 1}," +
