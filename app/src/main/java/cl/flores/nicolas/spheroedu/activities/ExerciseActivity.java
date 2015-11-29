@@ -10,6 +10,7 @@ import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
 import android.view.View;
 import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.NumberPicker;
 import android.widget.TextView;
 
@@ -47,6 +48,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
     private NumberPicker np;
     private int position;
     private TextView spheroColor;
+    private int charge;
 
     public ExerciseActivity() {
         super();
@@ -249,14 +251,15 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
 
                 np.setValue(charge);
-                np.setVisibility(View.VISIBLE);
+                LinearLayout ln = (LinearLayout) findViewById(R.id.linearLayout);
+                ln.setVisibility(View.VISIBLE);
             } else if (jsonObject.has(Constants.JSON_CHARGE_VALUE)) {
                 int charge = jsonObject.getInt(Constants.JSON_CHARGE_VALUE);
                 int pos = jsonObject.getInt(Constants.JSON_SPHERO_NUMBER);
 
                 synchronized (manager) {
                     RobotWrapper wrapper = manager.getWrapper(pos);
-                    wrapper.setCharge(Integer.parseInt(charges[charge]));
+                    wrapper.setCharge(charge);
                 }
                 getTotalForce();
                 // TODO if sphero is in square position finish
@@ -308,7 +311,8 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
                 break;
             }
         }
-        np.setVisibility(View.VISIBLE);
+        LinearLayout ln = (LinearLayout) findViewById(R.id.linearLayout);
+        ln.setVisibility(View.VISIBLE);
         Button button = (Button) findViewById(R.id.stabilization_btn);
         button.setVisibility(View.GONE);
 
@@ -317,26 +321,7 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
 
     @Override
     public void onValueChange(NumberPicker picker, int oldVal, int newVal) {
-        if (master) {
-            synchronized (manager) {
-                RobotWrapper wrapper = manager.getWrapper(position);
-                wrapper.setCharge(Integer.parseInt(charges[newVal]));
-            }
-            getTotalForce();
-        } else {
-            for (CommunicationThread thread : communicationThreads) {
-                JSONObject message = new JSONObject();
-                try {
-                    message.put(Constants.JSON_NAME, name);
-                    message.put(Constants.JSON_MESSAGE, "Charge value change");
-                    message.put(Constants.JSON_CHARGE_VALUE, newVal);
-                    message.put(Constants.JSON_SPHERO_NUMBER, position);
-                } catch (JSONException e) {
-                    Log.e(Constants.LOG_TAG, "Error writing JSON", e);
-                }
-                thread.write(message.toString());
-            }
-        }
+        charge = Integer.parseInt(charges[newVal]);
     }
 
     private void getTotalForce() {
@@ -366,5 +351,28 @@ public class ExerciseActivity extends AppCompatActivity implements NumberPicker.
         float charge = (k * q1.getCharge() * q2.getCharge()) / (float) r21.module();
         Vector dir = r21.normalize();
         return dir.pond(charge);
+    }
+
+    public void setCharge(View v) {
+        if (master) {
+            synchronized (manager) {
+                RobotWrapper wrapper = manager.getWrapper(position);
+                wrapper.setCharge(charge);
+            }
+            getTotalForce();
+        } else {
+            for (CommunicationThread thread : communicationThreads) {
+                JSONObject message = new JSONObject();
+                try {
+                    message.put(Constants.JSON_NAME, name);
+                    message.put(Constants.JSON_MESSAGE, "Charge value change");
+                    message.put(Constants.JSON_CHARGE_VALUE, charge);
+                    message.put(Constants.JSON_SPHERO_NUMBER, position);
+                } catch (JSONException e) {
+                    Log.e(Constants.LOG_TAG, "Error writing JSON", e);
+                }
+                thread.write(message.toString());
+            }
+        }
     }
 }

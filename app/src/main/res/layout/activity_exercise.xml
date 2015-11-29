@@ -37,14 +37,42 @@
         android:text="@string/sphero_position"
         android:textAppearance="?android:attr/textAppearanceMedium" />
 
-    <NumberPicker
-        android:id="@+id/numberPicker"
+    <TextView
+        android:id="@+id/textView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/locationTV"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="20dp"
+        android:gravity="center_horizontal"
+        android:text="@string/sphero_charge"
+        android:textAppearance="?android:attr/textAppearanceMedium" />
+
+    <LinearLayout
+        android:id="@+id/linearLayout"
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/textView"
         android:layout_centerHorizontal="true"
-        android:layout_centerVertical="true"
-        android:measureWithLargestChild="false"
-        android:visibility="gone" />
+        android:orientation="horizontal"
+        android:visibility="gone">
+
+        <NumberPicker
+            android:id="@+id/numberPicker"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="0.5"
+            android:visibility="visible" />
+        <!--android:measureWithLargestChild="false"-->
+
+        <Button
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center_vertical"
+            android:layout_weight="0.5"
+            android:onClick="setCharge"
+            android:text="@string/change_btn" />
+    </LinearLayout>
 
     <Button
         android:id="@+id/stabilization_btn"
@@ -54,6 +82,6 @@
         android:layout_alignParentEnd="true"
         android:layout_alignParentStart="true"
         android:onClick="setStabilization"
-        android:text="Calibrar" />
+        android:text="@string/calibrate_btn" />
 
 </RelativeLayout>

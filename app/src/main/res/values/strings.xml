@@ -30,7 +30,10 @@
     <string name="sphero_connected">Conectado con Sphero %1$s</string>
     <string name="sphero_offline">Sphero %1$s desconectado</string>
 
-    <!--Excersice Activity-->
+    <!--Exercise Activity-->
+    <string name="calibrate_btn">Calibrar</string>
     <string name="sphero_color">El color de tu Sphero es</string>
-    <string name="sphero_position">Se encuentra en (%1$.1f, %2$.1f) y tiene una carga de</string>
+    <string name="sphero_position">Y está ubicado en (%1$.1f, %2$.1f).</string>
+    <string name="sphero_charge">La carga asociada en Coulombs es</string>
+    <string name="change_btn">Cambiar</string>
 </resources>
