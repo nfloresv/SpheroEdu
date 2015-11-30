@@ -3,6 +3,8 @@
     <string name="app_name">SpheroEdu</string>
     <string name="MASTER_APP_NAME">Maestro SpheroEdu</string>
     <string name="SLAVE_APP_NAME">Esclavo SpheroEdu</string>
+    <string name="MASTER_EXERCISE_APP_NAME">Ejercicio - Maestro SpheroEdu</string>
+    <string name="SLAVE_EXERCISE_APP_NAME">Ejercicio - Esclavo SpheroEdu</string>
 
     <!--Main Activity-->
     <string name="action_settings">Settings</string>

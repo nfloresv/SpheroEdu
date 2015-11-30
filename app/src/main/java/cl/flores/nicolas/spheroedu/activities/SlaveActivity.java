@@ -61,9 +61,8 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
 
         Bundle extras = new Bundle();
         extras.putString(Constants.BUNDLE_PARAM_USER_NAME, name);
-        extras.putBoolean(Constants.BUNDLE_PARAM_MASTER, false);
 
-        Intent exercise = new Intent(this, ExerciseActivity.class);
+        Intent exercise = new Intent(this, SlaveExercise.class);
         exercise.putExtras(extras);
         startActivity(exercise);
         finish();

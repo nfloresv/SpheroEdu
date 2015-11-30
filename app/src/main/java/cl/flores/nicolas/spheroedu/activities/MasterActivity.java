@@ -182,9 +182,8 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
 
             Bundle extras = new Bundle();
             extras.putString(Constants.BUNDLE_PARAM_USER_NAME, name);
-            extras.putBoolean(Constants.BUNDLE_PARAM_MASTER, true);
 
-            Intent exercise = new Intent(this, ExerciseActivity.class);
+            Intent exercise = new Intent(this, MasterExercise.class);
             exercise.putExtras(extras);
             startActivity(exercise);
             finish();

@@ -18,7 +18,6 @@ public class Constants {
 
     //    Bundle
     public static final String BUNDLE_PARAM_USER_NAME = "USER_NAME";
-    public static final String BUNDLE_PARAM_MASTER = "MASTER";
 
     //    Log
     public static final String LOG_TAG = "MEMORIA-NFLORES";
