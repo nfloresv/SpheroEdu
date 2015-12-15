@@ -13,10 +13,13 @@ import java.util.List;
 
 import cl.flores.nicolas.spheroedu.Utils.Constants;
 import cl.flores.nicolas.spheroedu.Utils.SpheroColors;
+import cl.flores.nicolas.spheroedu.Utils.Vector;
 
 public class RobotManager {
     private int independent;
     private ArrayList<RobotWrapper> robots;
+    private int tolerance;
+    private Vector destination;
 
     public RobotManager(ArrayList<ConvenienceRobot> robots, String exercise) {
         this.robots = new ArrayList<>();
@@ -40,6 +43,12 @@ public class RobotManager {
                 RobotWrapper wrapper = new RobotWrapper(robot, color, x, y, charge);
                 this.robots.add(wrapper);
             }
+
+            JSONObject objective = description.getJSONObject(Constants.JSON_EXERCISE_DESTINATION);
+            tolerance = objective.getInt(Constants.JSON_EXERCISE_TOLERANCE);
+            float x = (float) objective.getDouble(Constants.JSON_POSITION_X);
+            float y = (float) objective.getDouble(Constants.JSON_POSITION_Y);
+            destination = new Vector(x, y);
         } catch (JSONException e) {
             independent = 0;
             Log.e(Constants.LOG_TAG, "Error parsing JSON Exercise", e);
@@ -69,5 +78,12 @@ public class RobotManager {
             if (robot != null)
                 robot.sleep();
         }
+    }
+
+    public boolean isInDestination(Vector pos) {
+        double x = Math.pow(pos.getX() - destination.getX(), 2);
+        double y = Math.pow(pos.getY() - destination.getY(), 2);
+        double r = Math.pow(tolerance, 2);
+        return x + y <= r;
     }
 }

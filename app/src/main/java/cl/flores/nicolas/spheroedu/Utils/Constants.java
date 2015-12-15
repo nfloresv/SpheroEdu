@@ -41,15 +41,18 @@ public class Constants {
     public static final String JSON_EXERCISE_X = "X";
     public static final String JSON_EXERCISE_Y = "Y";
     public static final String JSON_EXERCISE_CHARGE = "CHARGE";
+    public static final String JSON_EXERCISE_DESTINATION = "DESTINATION";
+    public static final String JSON_EXERCISE_TOLERANCE = "TOLERANCE";
 
     //    Exercise
     public static final String EXCERCISE_JSON =
-            "{" +
-                    "\"INDEPENDENT\": 1," +
-                    "\"SPHEROS\": [" +
-                    "{\"X\": 0,\"Y\": 0,\"CHARGE\": 1}," +
-                    "{\"X\": 2,\"Y\": 2,\"CHARGE\": 0}," +
-                    "{\"X\": 4,\"Y\": -4,\"CHARGE\": 0}" +
-                    "]" +
-                    "}";
+        "{" +
+            "\"INDEPENDENT\": 1," +
+            "\"SPHEROS\": [" +
+                "{\"X\": 0,\"Y\": 0,\"CHARGE\": 1}," +
+                "{\"X\": 2,\"Y\": 2,\"CHARGE\": 0}," +
+                "{\"X\": 4,\"Y\": -4,\"CHARGE\": 0}" +
+            "]," +
+            "\"DESTINATION\": {\"X\": -2,\"Y\": 4,\"TOLERANCE\": 1}" +
+        "}";
 }

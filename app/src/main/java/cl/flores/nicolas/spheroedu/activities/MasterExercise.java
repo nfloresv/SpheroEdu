@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.LinearLayout;
+import android.widget.TextView;
 
 import com.orbotix.ConvenienceRobot;
 import com.orbotix.async.DeviceSensorAsyncMessage;
@@ -63,7 +64,6 @@ public class MasterExercise extends ExerciseActivity {
 
                     synchronized (manager) {
                         for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
-                            // TODO if sphero is in destination prevent moves
                             Robot sphero = wrapper.getRobot().getRobot();
                             String spheroName = sphero.getName();
                             String robotName = robot.getName();
@@ -116,20 +116,23 @@ public class MasterExercise extends ExerciseActivity {
 
         synchronized (manager) {
             for (RobotWrapper q0 : manager.getIndependentWrapper()) {
-                Vector force = new Vector(0, 0);
-                for (RobotWrapper q1 : manager.getDependentWrapper()) {
-                    Vector subForce = getForce(q0, q1);
-                    force = force.add(subForce);
-                }
+                boolean inDestination = manager.isInDestination(q0.getPos());
+                if (inDestination) {
+                    Vector force = new Vector(0, 0);
+                    for (RobotWrapper q1 : manager.getDependentWrapper()) {
+                        Vector subForce = getForce(q0, q1);
+                        force = force.add(subForce);
+                    }
 
-                double angle = force.angle(axis);
-                if (force.getX() < 0) {
-                    angle = 360 - angle;
-                }
-                float vel = (float) force.module();
+                    double angle = force.angle(axis);
+                    if (force.getX() < 0) {
+                        angle = 360 - angle;
+                    }
+                    float vel = (float) force.module();
 
-                ConvenienceRobot robot = q0.getRobot();
-                robot.drive((float) angle, vel);
+                    ConvenienceRobot robot = q0.getRobot();
+                    robot.drive((float) angle, vel);
+                }
             }
         }
     }
@@ -213,6 +216,12 @@ public class MasterExercise extends ExerciseActivity {
         }
         position = communicationThreads.size();
         spheroColor.setBackgroundColor(rgbColor);
+        String sphero_position = getString(R.string.sphero_position);
+        double positionX = wrapper.getPos().getX();
+        double positionY = wrapper.getPos().getY();
+        sphero_position = String.format(sphero_position, positionX, positionY);
+        TextView locationTv = (TextView) findViewById(R.id.locationTV);
+        locationTv.setText(sphero_position);
 
         // Communication
         for (CommunicationThread thread : communicationThreads) {
