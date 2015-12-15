@@ -209,9 +209,9 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
                     spheros.add(sphero);
                     String online = getString(R.string.sphero_connected);
                     Toast.makeText(this, String.format(online, robot.getName()), Toast.LENGTH_SHORT).show();
-                    sphero.setZeroHeading();
+
                     int rgb = Color.parseColor(SpheroColors.connectedColor);
-                    sphero.setLed(Color.red(rgb)/255f, Color.green(rgb)/255f, Color.blue(rgb)/255f);
+                    sphero.setLed(Color.red(rgb) / 255f, Color.green(rgb) / 255f, Color.blue(rgb) / 255f);
                 }
                 break;
             case Disconnected:

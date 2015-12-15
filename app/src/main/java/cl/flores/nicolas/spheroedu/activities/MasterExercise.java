@@ -63,17 +63,23 @@ public class MasterExercise extends ExerciseActivity {
 
                     synchronized (manager) {
                         for (RobotWrapper wrapper : manager.getIndependentWrapper()) {
+                            // TODO if sphero is in destination prevent moves
                             Robot sphero = wrapper.getRobot().getRobot();
                             String spheroName = sphero.getName();
                             String robotName = robot.getName();
                             if (spheroName.equals(robotName)) {
+                                Vector distance = new Vector(locatorData.getPositionX(), locatorData.getPositionY());
+                                distance = distance.subtract(wrapper.getPos());
+                                if (distance.module() >= 1) {
+                                    wrapper.getRobot().stop();
+                                }
                                 wrapper.setPos(locatorData.getPositionX(), locatorData.getPositionY());
                                 break;
                             }
                         }
                     }
-                    getTotalForce();
 
+                    // Sphero out of range
                     if (Math.sqrt(Math.pow(locatorData.getPositionY(), 2) + Math.pow(locatorData.getPositionX(), 2)) >= 100) {
                         ConvenienceRobot sphero = new ConvenienceRobot(robot);
                         sphero.stop();
@@ -107,30 +113,39 @@ public class MasterExercise extends ExerciseActivity {
 
     private void getTotalForce() {
         final Vector axis = new Vector(0, 1);
-        final float max = (float) (Float.MAX_VALUE * Math.sqrt(2));
 
         synchronized (manager) {
-            for (RobotWrapper q1 : manager.getIndependentWrapper()) {
+            for (RobotWrapper q0 : manager.getIndependentWrapper()) {
                 Vector force = new Vector(0, 0);
-                for (RobotWrapper q2 : manager.getDependentWrapper()) {
-                    Vector subForce = getForce(q1, q2);
+                for (RobotWrapper q1 : manager.getDependentWrapper()) {
+                    Vector subForce = getForce(q0, q1);
                     force = force.add(subForce);
                 }
 
                 double angle = force.angle(axis);
-                float vel = (float) force.module();//(force.module() / max);
+                if (force.getX() < 0) {
+                    angle = 360 - angle;
+                }
+                float vel = (float) force.module();
 
-                ConvenienceRobot robot = q1.getRobot();
+                ConvenienceRobot robot = q0.getRobot();
                 robot.drive((float) angle, vel);
             }
         }
     }
 
-    private Vector getForce(RobotWrapper q1, RobotWrapper q2) {
+    private Vector getForce(RobotWrapper q0, RobotWrapper q1) {
         final float k = 8.99e9f;
-        Vector r21 = q1.getPos().subtract(q2.getPos());
-        float charge = (k * q1.getCharge() * q2.getCharge()) / (float) r21.module();
-        Vector dir = r21.normalize();
+        Vector r0 = q0.getPos().pond(1 / 100f);   // Position in centimeter
+        Vector r1 = q1.getPos().pond(1 / 100f);   // Position in centimeter
+
+        Vector r = r0.subtract(r1);
+        double module = r.module();
+        float c0 = q0.getCharge() * 1e-6f;  // Micro coloumbs
+        float c1 = q1.getCharge() * 1e-6f;  // Micro coloumbs
+
+        float charge = (k * c0 * c1) / (float) Math.pow(module, 2);
+        Vector dir = r.normalize();
         return dir.pond(charge);
     }
 
@@ -236,7 +251,6 @@ public class MasterExercise extends ExerciseActivity {
                     wrapper.setCharge(charge);
                 }
                 getTotalForce();
-                // TODO if sphero is in square position finish
             }
         } catch (JSONException e) {
             Log.e(Constants.LOG_TAG, "Error parsing JSON", e);

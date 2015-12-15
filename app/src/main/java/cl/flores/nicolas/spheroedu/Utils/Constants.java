@@ -45,11 +45,11 @@ public class Constants {
     //    Exercise
     public static final String EXCERCISE_JSON =
             "{" +
-                "\"INDEPENDENT\": 1," +
-                "\"SPHEROS\": [" +
+                    "\"INDEPENDENT\": 1," +
+                    "\"SPHEROS\": [" +
                     "{\"X\": 0,\"Y\": 0,\"CHARGE\": 1}," +
                     "{\"X\": 2,\"Y\": 2,\"CHARGE\": 0}," +
                     "{\"X\": 4,\"Y\": -4,\"CHARGE\": 0}" +
-                "]" +
-            "}";
+                    "]" +
+                    "}";
 }
