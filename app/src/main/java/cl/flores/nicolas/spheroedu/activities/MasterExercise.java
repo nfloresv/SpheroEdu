@@ -117,7 +117,7 @@ public class MasterExercise extends ExerciseActivity {
         synchronized (manager) {
             for (RobotWrapper q0 : manager.getIndependentWrapper()) {
                 boolean inDestination = manager.isInDestination(q0.getPos());
-                if (inDestination) {
+                if (!inDestination) {                                        // TODO analizar posible error
                     Vector force = new Vector(0, 0);
                     for (RobotWrapper q1 : manager.getDependentWrapper()) {
                         Vector subForce = getForce(q0, q1);
@@ -132,6 +132,10 @@ public class MasterExercise extends ExerciseActivity {
 
                     ConvenienceRobot robot = q0.getRobot();
                     robot.drive((float) angle, vel);
+                }   else {
+                    ConvenienceRobot sphero = q0.getRobot();
+                    int rgb = Color.parseColor(SpheroColors.destinationColor);
+                    sphero.setLed(Color.red(rgb) / 255f, Color.green(rgb) / 255f, Color.blue(rgb) / 255f);
                 }
             }
         }
