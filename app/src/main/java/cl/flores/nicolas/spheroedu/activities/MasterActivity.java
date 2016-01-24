@@ -12,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.graphics.Color;
 import android.os.Bundle;
-import android.os.Looper;
 import android.util.Log;
 import android.util.SparseBooleanArray;
 import android.view.View;
@@ -107,6 +106,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
         discoveryAgent = DualStackDiscoveryAgent.getInstance();
+        discoveryAgent.setMaxConnectedRobots(3);
 
         ArrayList<String> devices = new ArrayList<>();
         adapter = new ArrayAdapter<>(this, android.R.layout.simple_list_item_multiple_choice, devices);
@@ -188,12 +188,6 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
             startActivity(exercise);
             finish();
         }
-
-        Looper.prepare();
-        String res = getString(R.string.connected_devises);
-        String message = String.format(res, bluetoothSockets.size(), devices.size());
-        Toast.makeText(this, message, Toast.LENGTH_SHORT).show();
-        Looper.loop();
     }
 
     @Override

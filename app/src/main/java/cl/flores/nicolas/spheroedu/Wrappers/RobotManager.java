@@ -46,8 +46,8 @@ public class RobotManager {
 
             JSONObject objective = description.getJSONObject(Constants.JSON_EXERCISE_DESTINATION);
             tolerance = objective.getInt(Constants.JSON_EXERCISE_TOLERANCE);
-            float x = (float) objective.getDouble(Constants.JSON_POSITION_X);
-            float y = (float) objective.getDouble(Constants.JSON_POSITION_Y);
+            float x = (float) objective.getDouble(Constants.JSON_EXERCISE_X);
+            float y = (float) objective.getDouble(Constants.JSON_EXERCISE_Y);
             destination = new Vector(x, y);
         } catch (JSONException e) {
             independent = 0;
