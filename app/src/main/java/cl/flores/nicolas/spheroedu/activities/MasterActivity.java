@@ -20,7 +20,7 @@ import android.widget.ListView;
 import android.widget.Toast;
 
 import com.orbotix.ConvenienceRobot;
-import com.orbotix.DualStackDiscoveryAgent;
+import com.orbotix.classic.DiscoveryAgentClassic;
 import com.orbotix.classic.RobotClassic;
 import com.orbotix.common.DiscoveryException;
 import com.orbotix.common.Robot;
@@ -48,7 +48,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
     private ProgressDialog connectingDialog;
     private ArrayAdapter<String> adapter;
     private BluetoothAdapter bluetoothAdapter;
-    private DualStackDiscoveryAgent discoveryAgent;
+    private DiscoveryAgentClassic discoveryAgent;
     private Thread dismissThread;
 
     public MasterActivity() {
@@ -105,7 +105,7 @@ public class MasterActivity extends ListActivity implements RobotChangedStateLis
         }
 
         bluetoothAdapter = BluetoothAdapter.getDefaultAdapter();
-        discoveryAgent = DualStackDiscoveryAgent.getInstance();
+        discoveryAgent = DiscoveryAgentClassic.getInstance();
         discoveryAgent.setMaxConnectedRobots(3);
 
         ArrayList<String> devices = new ArrayList<>();
