@@ -50,7 +50,17 @@ public class SlaveActivity extends AppCompatActivity implements SocketInterface 
     public void onResume() {
         super.onResume();
         if (server != null && !server.isAlive()) {
-            server.start();
+            new Thread() {
+                @Override
+                public void run() {
+                    try {
+                        sleep(6 * 1000);
+                        server.start();
+                    } catch (InterruptedException e) {
+                        e.printStackTrace();
+                    }
+                }
+            }.start();
         }
     }
 
